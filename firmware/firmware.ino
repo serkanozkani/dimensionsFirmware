@@ -20,25 +20,16 @@
 
 #include "LedIndicator.h"
 
+#include "CommandParser.h"
+
 Ramps rampsInstance;
 unsigned long timestamp;
 LedIndicator theLed;
+CommandParser commandParser;
 
-
-/*	* Cache and Tx/Rx:
-	*
-	*/
-
-unsigned long hash;
 unsigned long cycles = 0;
-int param1;
-int param2;
-int param3;
 
-bool pendingRx = false;
-char bufferRx[MAX_TX_BUFFER];
-word bufferRxPtr = 0;
-word bufferRxLen = 0;
+bool readyRx = false;
 
 /*	* SETUP
 	*
@@ -49,11 +40,23 @@ void setup() {
 
 	rampsInstance.setup();
 	
-
 	theLed = rampsInstance.getLedIndicator();
 	
 	theLed.on();
 
+	delay(3000);
+
+	commandParser.write('M');
+	commandParser.write('o');
+	commandParser.write('o');
+	commandParser.write('(');
+	commandParser.write('0');
+	commandParser.write(',');
+	commandParser.write('1');
+	commandParser.write(',');
+	commandParser.write('1');
+	commandParser.write('0');
+	commandParser.write(')');
 }
 
 /*	* LOOP
@@ -69,25 +72,34 @@ void loop() {
 
 	if (cycles == 0) {
 		Serial.println(timestamp, DEC);
-		Serial.println(pendingRx, DEC);
 		if (timestamp > 5000) {
 			Serial.println ("Ready for input.");
-			pendingRx = true;
+			readyRx = true;
 		}
 	}
 
-	if (pendingRx && Serial.available()){
-		char c = Serial.read();
 
-		bufferRx[bufferRxLen] = c;
-		bufferRxLen++;
-		if (bufferRxLen > MAX_TX_BUFFER) {
-			bufferRxLen = 0;
-		}
-		if (c == '\n') {
-			bufferRxLen = 0;
-			Serial.println (bufferRx);
-		}
+	if (readyRx && Serial.available()) {
+		byte c = Serial.read();
+		Serial.println (c);
+		//commandParser.write(c);
+	
+		/*if (commandParser.ready()) {
+			readyRx = false;
+
+			Serial.println ("Received command.");
+			unsigned long hash;
+			int param1;
+			int param2;
+			int param3;
+
+			//commandParser.read(hash, param1, param2, param3);
+
+			Serial.println (hash);
+			Serial.println (param1);
+			Serial.println (param2);
+			Serial.println (param3);
+		}*/
 	}
 
 	cycles++;
