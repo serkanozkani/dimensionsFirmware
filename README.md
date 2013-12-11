@@ -27,6 +27,7 @@ this project is not functional, and new RepRap users should check out the [RepRa
 
 ## Project Timeline
     - [Reverse chronological order]
+    - 2013-12-11 Wrote simple command parser library.
     - 2013-12-10 Published progress to github, licensed cc by-sa 4.0
     - 2013-12-09 Broke out to current library format etc.
     - 2013-12-08 Testing basic led functionality etc.
