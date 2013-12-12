@@ -10,20 +10,22 @@
 	*/
 
 #include "CommandParser.h"
+#include "Arduino.h"
+
 
 CommandParser::CommandParser() {
 	clear(0);
 }
 
 void CommandParser::clear (char error) {
-
 	_hash = 5381;
+	_state = 0;
+	_paramAt = 0;
+
 	_param[0] = 0;
 	_param[1] = 0;
 	_param[2] = 0;
 
-	_commandReady = false;
-	_parserState = 0;
 	_error = error;
 }
 
@@ -31,65 +33,42 @@ bool CommandParser::ready() {
 	if (_error != 0) {
 		return false;
 	}
-	return _commandReady;
+	return (_state == 2);
 }
 
-void CommandParser::read(unsigned long& hash, int& param1, int& param2, int& param3)
+void CommandParser::read(unsigned long &hash, unsigned int &param0, unsigned int &param1, unsigned int &param2)
 {
 	if (_error == 0) {
 		hash = _hash;
+		param0 = _param[0];
 		param1 = _param[1];
 		param2 = _param[2];
-		param3 = _param[3];
 	}
 	clear(0);
 }
 
-
-void CommandParser::write(const byte& c) {
-	Serial.println ("C: "+c);
-
-	switch (_parserState) {
-		case (0):
-			// while receiving the command id, expects [\.A-Za-z]
-			if ( c != 0x2E && (c <= 0x40 || c >= 0x5B) && (c <= 0x60 || c >= 0x7B) )
-				_parserState++;
-			break;
-
-		default:
-			// while receiving a parameter, a comma advances the parameter id.
-			if ( c == ','))
-				_parserState++;
-			if ( c == ')') {
-				_commandReady = true;
-				return;
-			}
-			if ( c == '(') {
-				// ignore this character.
-				return;
-			}
-			if (c > 0x3A || c < 0x30) {
-				Serial.println("Error with input. Parameter field expects [0-9]*.");
-				clear(COMMAND_PARSER_ERROR_PARAMETER_UNEXPECTED_BYTE);
-			}
-			break;
+void CommandParser::write(const char &c) {
+	if (_state == 2) {
+		return;
+	} else if (_state == 1) {
+		if (c == 44){ // ,
+			_paramAt++;
+		} else if (c == 41) { // )
+			_state = 2;
+		} else if (c >= 48 && c <= 58) {
+			_param[_paramAt] = _param[_paramAt] * 10 + c - 48;
+		}
+	} else if (_state == 0) {
+		// while receiving the command id, expects [\.A-Za-z]
+		if (c == 40){ // (
+			_state = 1;
+		} else if ( c != 0x2E && (c <= 0x40 || c >= 0x5B) && (c <= 0x60 || c >= 0x7B) ) {
+			return;
+		}
+		
+		_hash = ((_hash << 5) + _hash) + c;
 	}
-	Serial.println ("_parserState: "+ _parserState);
 	
-	switch (_parserState) {
-		case (0):
-			hash = ((hash << 5) + hash) + c;
-			// put this character into the hash.
-			break;
-
-		case (MAX_PARAMS):
-			// The user sent too many parameters in the command.
-			Serial.println("Error with input. Too many parameters.");
-			clear(COMMAND_PARSER_ERROR_MANY_PARAMETERS);
-			break;
-		case default:
-			_param[_parserState-1] = _param[_parserState-1] *10 + c & 0xF;
-			break;
-	}
+	
 	
 }

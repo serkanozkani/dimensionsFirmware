@@ -20,7 +20,7 @@ class ExtruderController
 		ExtruderController();
 		ExtruderController(PoluluStepper extruderMotor, int interfacePin, Thermistor hotendThermistor);
 		void setup();
-		void loop(int now);
+		void loop(unsigned long now);
 		
 		void setRate (int mmHrRate);
 		void setTemp (int degreesCelsius);

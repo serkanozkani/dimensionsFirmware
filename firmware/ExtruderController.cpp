@@ -82,7 +82,7 @@ void ExtruderController::setTemp(int degreesCelsius)
 	_targetTemp = degreesCelsius;
 }
 
-void ExtruderController::loop(int now)
+void ExtruderController::loop(unsigned long now)
 {
 	int degreesCelsius = getTemp();
 

@@ -17,8 +17,11 @@ this project is not functional, and new RepRap users should check out the [RepRa
 
 ## External projects for RepRap:
 [Sprinter Firmware](https://github.com/kliment/Sprinter)
+
 [Slic3r Software](http://slic3r.org/)
+
 [Pronterface](https://github.com/kliment/Printrun)
+
 [RepRap Wiki](http://reprap.org/wiki/Main_Page)
 
 ## License
@@ -27,6 +30,7 @@ this project is not functional, and new RepRap users should check out the [RepRa
 
 ## Project Timeline
     - [Reverse chronological order]
+    - 2013-12-12 Tested [reset, emergencyStop, testEndstopX, testMotorX] successfully
     - 2013-12-11 Wrote simple command parser library.
     - 2013-12-10 Published progress to github, licensed cc by-sa 4.0
     - 2013-12-09 Broke out to current library format etc.

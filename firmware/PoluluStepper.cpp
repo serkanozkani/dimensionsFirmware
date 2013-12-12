@@ -10,6 +10,7 @@
 	*/
 
 #include "PoluluStepper.h"
+#include "motors.h"
 #include "Arduino.h"
 
 PoluluStepper::PoluluStepper()
@@ -17,11 +18,8 @@ PoluluStepper::PoluluStepper()
 	_stepPin = -1;
 	_enablePin = -1;
 	_directionPin = -1;
+	
 	_enabled = false;
-	_direction = false;
-	_directionOld = true;
-
-	_stepsRemaining = 0;
 }
 
 PoluluStepper::PoluluStepper(int stepPin, int enablePin, int directionPin)
@@ -31,10 +29,8 @@ PoluluStepper::PoluluStepper(int stepPin, int enablePin, int directionPin)
 	_directionPin = directionPin;
 
 	_enabled = false;
-	_direction = false;
-	_directionOld = true;
 
-	_stepsRemaining = 0;
+	disable();
 }
 
 void PoluluStepper::setup()
@@ -46,75 +42,66 @@ void PoluluStepper::setup()
 	disable();
 }
 
+void PoluluStepper::fast(){
+	_delayPerHalfStep = DELAY_US_PER_HALF_STEP_FAST;
+}
+
+void PoluluStepper::slow(){
+	_delayPerHalfStep = DELAY_US_PER_HALF_STEP_SLOW;
+}
+
+void PoluluStepper::normal(){
+	_delayPerHalfStep = DELAY_US_PER_HALF_STEP_NORMAL;
+}
 
 void PoluluStepper::enable()
 {
 	if (_enabled == false) {
 		_enabled = true;
-		digitalWrite(_enablePin, HIGH);
+		digitalWrite(_enablePin, LOW);
 	}
 }
 
 void PoluluStepper::disable()
 {
-	if (_enabled == true) {
-		_enabled = false;
-		digitalWrite(_enablePin, LOW);
-	}
-	_stepsRemaining = 0;
+	_enabled = false;
+
+	digitalWrite(_enablePin, HIGH);
 }
 
-void PoluluStepper::rotateCW(int numSteps)
+void PoluluStepper::setDirection (bool clockwise)
 {
-	if (_direction == true) {
-		_direction = false;
+	if (clockwise) {
+		digitalWrite(_directionPin, LOW);
+	} else {
+		digitalWrite(_directionPin, HIGH);
 	}
+}
+
+void PoluluStepper::revolve (bool clockwise)
+{
 	enable();
+
+	setDirection(clockwise);
+
+	for (unsigned int i = MOTOR_STEPS_PER_REVOLUTION; i--; ) {
+		digitalWrite(_stepPin, HIGH);
+		delayMicroseconds(DELAY_US_PER_HALF_STEP_NORMAL);
+		digitalWrite(_stepPin, LOW);
+		delayMicroseconds(DELAY_US_PER_HALF_STEP_NORMAL);
+	}
 }
 
-void PoluluStepper::rotateCCW(int numSteps)
+void PoluluStepper::rotate( unsigned int numSteps, bool clockwise)
 {
-	if (_direction == false) {
-		_direction = true;
-	}
 	enable();
-}
 
-int PoluluStepper::getStepsRemaining ()
-{
-	return _stepsRemaining;
-}
+	setDirection(clockwise);
 
-bool PoluluStepper::step(int times)
-{
-	if (_enabled == false) {
-		return false;
+	for (unsigned int i = numSteps; i--; ) {
+		digitalWrite(_stepPin, HIGH);
+		delayMicroseconds(DELAY_US_PER_HALF_STEP_NORMAL);
+		digitalWrite(_stepPin, LOW);
+		delayMicroseconds(DELAY_US_PER_HALF_STEP_NORMAL);
 	}
-
-	if (_direction != _directionOld) {
-		if (_direction == true ) {
-			digitalWrite(_directionPin, LOW);
-		} else {
-			digitalWrite(_directionPin, HIGH);
-		}
-	}
-
-	if (_stepsRemaining == 0) {
-		disable();
-		// This is done for safety.
-		// Calling step after stepsRemaining is exhausted means there was a bug.
-		
-		return false;
-	} 
-
-	for(int i=times; i--;) {
-		digitalWrite(_enablePin, HIGH);
-		digitalWrite(_enablePin, LOW);
-	}
-
-	if (_stepsRemaining == 0) {
-		return false;
-	}
-	
-	return true;
 }

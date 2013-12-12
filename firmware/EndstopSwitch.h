@@ -19,7 +19,7 @@ class EndstopSwitch
 		EndstopSwitch(int interfacePin, bool normallyHigh);
 		void setup();
 		
-		bool getState();
+		bool triggered();
 
 	private:
 		int _pin;

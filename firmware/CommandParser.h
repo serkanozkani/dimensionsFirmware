@@ -13,31 +13,25 @@
 #define CommandParser_h
 
 #define MAX_PARAMS 3
-
 #define COMMAND_PARSER_ERROR_PARAMETER_UNEXPECTED_BYTE -1
 #define COMMAND_PARSER_ERROR_MANY_PARAMETERS -2
+
 class CommandParser
 {
 	public:
 		CommandParser();
-
-		void clear();
-
-		void write(const byte& c);
-		
+		void clear(char);
 		bool ready();
-		void read(unsigned long& hash, int& param1, int& param2, int& param3);
+		void write(const char &c);
+		void read(unsigned long &hash, unsigned int &param0, unsigned int &param1, unsigned int &param2);
 
-	private:
-		
+	private:		
 		unsigned long _hash;
-		int _param[MAX_PARAMS];
+		unsigned int _param[MAX_PARAMS];
 
-		byte _parserState;
-
-		bool _commandReady;
-
-
+		char _error;
+		char _state;
+		char _paramAt;
 };
 
 #endif

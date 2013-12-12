@@ -22,7 +22,11 @@
 
 #include "CommandParser.h"
 
+#include "RampsCerebellum.h"
+	
 Ramps rampsInstance;
+RampsCerebellum rampsCerebellum;
+
 unsigned long timestamp;
 LedIndicator theLed;
 CommandParser commandParser;
@@ -39,24 +43,21 @@ void setup() {
 	Serial.begin(9600);
 
 	rampsInstance.setup();
-	
-	theLed = rampsInstance.getLedIndicator();
-	
-	theLed.on();
+
+	rampsCerebellum.setup(rampsInstance);
+
+	rampsCerebellum.reset();
+
+	readyRx = true;
 
 	delay(3000);
 
-	commandParser.write('M');
-	commandParser.write('o');
-	commandParser.write('o');
-	commandParser.write('(');
-	commandParser.write('0');
-	commandParser.write(',');
-	commandParser.write('1');
-	commandParser.write(',');
-	commandParser.write('1');
-	commandParser.write('0');
-	commandParser.write(')');
+	Serial.println("rampsCerebellum is capable of: (Enter a line+newline into serial input.)");
+	Serial.println("rampsCerebellum.reset() // Blinks led");
+	Serial.println("rampsCerebellum.emergencyStop() // Stops any action");
+	Serial.println("rampsCerebellum.testEndstopX() // Starts watching sensor");
+	Serial.println("rampsCerebellum.testMotorX() // Rotates the motor 1 rev in each dir");
+
 }
 
 /*	* LOOP
@@ -70,37 +71,52 @@ void loop() {
 
 	rampsInstance.loop(timestamp);
 
-	if (cycles == 0) {
-		Serial.println(timestamp, DEC);
-		if (timestamp > 5000) {
-			Serial.println ("Ready for input.");
-			readyRx = true;
-		}
-	}
-
 
 	if (readyRx && Serial.available()) {
 		byte c = Serial.read();
-		Serial.println (c);
-		//commandParser.write(c);
+		commandParser.write(c);
 	
-		/*if (commandParser.ready()) {
+		if (commandParser.ready()) {
 			readyRx = false;
 
-			Serial.println ("Received command.");
 			unsigned long hash;
-			int param1;
-			int param2;
-			int param3;
+			unsigned int param1;
+			unsigned int param2;
+			unsigned int param3;
 
-			//commandParser.read(hash, param1, param2, param3);
+			commandParser.read(hash, param1, param2, param3);
 
-			Serial.println (hash);
-			Serial.println (param1);
-			Serial.println (param2);
-			Serial.println (param3);
-		}*/
+			switch (hash) {
+				case CERE_RESET:
+					rampsCerebellum.reset();
+					break;
+				case CERE_ZERO_X:
+					rampsCerebellum.zeroDimensionX();
+					break;
+				case CERE_EMERGENCY_STOP:
+					rampsCerebellum.emergencyStop();
+					break;
+				case CERE_TEST_ENDSTOP_X:
+					rampsCerebellum.testEndstopX();
+					break;
+				case CERE_TEST_MOTOR_X:
+					rampsCerebellum.testMotorX();
+					break;
+				default:
+					Serial.println (hash);
+					Serial.println ("1: ");
+					Serial.println (param1, DEC);
+					Serial.println ("2: ");
+					Serial.println (param2, DEC);
+					Serial.println ("3: ");
+					Serial.println (param3, DEC);
+					break;
+			}
+
+			readyRx = true;
+		}
 	}
+	rampsCerebellum.loop(timestamp);
 
 	cycles++;
 	if (cycles == 10000) {

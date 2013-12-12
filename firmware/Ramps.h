@@ -30,13 +30,19 @@ class Ramps
   public:
     Ramps();
     void setup();
-    void loop(int ms);
+    void loop(unsigned long ms);
 
-    PoluluStepper getXMotor();
-    PoluluStepper getYMotor();
-    PoluluStepper getZMotor();
+    PoluluStepper getMotorX();
+    PoluluStepper getMotorY();
+    PoluluStepper getMotorZ();
+
+    EndstopSwitch getEndstopX();
+    EndstopSwitch getEndstopY();
+    EndstopSwitch getEndstopZ();
 
     LedIndicator getLedIndicator();
+
+    PoluluStepper getExtruderMotorA();
 
     ExtruderController getExtruderA();
 
@@ -44,13 +50,13 @@ class Ramps
 
     
   private:
-    PoluluStepper _xMotor;
-    PoluluStepper _yMotor;
-    PoluluStepper _zMotor;
+    PoluluStepper _motorX;
+    PoluluStepper _motorY;
+    PoluluStepper _motorZ;
 
-    EndstopSwitch _xEndstop;
-    EndstopSwitch _yEndstop;
-    EndstopSwitch _zEndstop;
+    EndstopSwitch _endstopX;
+    EndstopSwitch _endstopY;
+    EndstopSwitch _endstopZ;
 
     LedIndicator _ledIndicator;
 

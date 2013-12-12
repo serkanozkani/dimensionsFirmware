@@ -21,22 +21,24 @@ class PoluluStepper
 		void enable();
 		void disable();
 
-		void rotateCW(int numSteps);
-		void rotateCCW(int numSteps);
-		
-		int getStepsRemaining();
-		bool step(int);
+		void fast();
+		void normal();
+		void slow();
+
+		void setDirection (bool reverse);
+
+		void revolve (bool reverse);
+		void rotate( unsigned int numSteps, bool reverse);
+
+		bool ready();
 
 	private:
 		int _stepPin;
 		int _enablePin;
 		int _directionPin;
+		
 		bool _enabled;
-		bool _direction;
-		bool _directionOld;
-
-		int _stepsRemaining;
-
+		unsigned int _delayPerHalfStep;
 };
 
 #endif

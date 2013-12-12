@@ -49,15 +49,15 @@ Ramps::Ramps()
 		*/
 	
 	PoluluStepper poluluStepperX(X_STEP_PIN, X_ENABLE_PIN, X_DIR_PIN);
-	_xMotor = poluluStepperX;
+	_motorX = poluluStepperX;
 
 
-	PoluluStepper poluluStepperY(Y_STEP_PIN, Y_ENABLE_PIN, Y_DIR_PIN);
-	_yMotor = poluluStepperY;
+	//PoluluStepper poluluStepperY(Y_STEP_PIN, Y_ENABLE_PIN, Y_DIR_PIN);
+	//_motorY = poluluStepperY;
 
 
-	PoluluStepper poluluStepperZ(Z_STEP_PIN, Z_ENABLE_PIN, Z_DIR_PIN);
-	_zMotor = poluluStepperZ;
+	//PoluluStepper poluluStepperZ(Z_STEP_PIN, Z_ENABLE_PIN, Z_DIR_PIN);
+	//_motorZ = poluluStepperZ;
 
 	PoluluStepper poluluStepperExtruderA(EXTRUDER_A_STEP_PIN, EXTRUDER_A_ENABLE_PIN, EXTRUDER_A_DIR_PIN);
 	_extruderA = poluluStepperExtruderA;
@@ -72,13 +72,13 @@ Ramps::Ramps()
 		*/
 
 	EndstopSwitch endstopX(X_MIN_ENDSTOP_PIN, X_MIN_ENDSTOP_TYPE);
-	_xEndstop = endstopX;
+	_endstopX = endstopX;
 
 	EndstopSwitch endstopY(Y_MIN_ENDSTOP_PIN, Y_MIN_ENDSTOP_TYPE);
-	_yEndstop = endstopY;
+	_endstopY = endstopY;
 
 	EndstopSwitch endstopZ(Z_MIN_ENDSTOP_PIN, Z_MIN_ENDSTOP_TYPE);
-	_zEndstop = endstopZ;
+	_endstopZ = endstopZ;
 
 	/*	* Setup of thermistors.
 		*	From: Thermistor.cpp 
@@ -103,11 +103,11 @@ Ramps::Ramps()
 		*	Constructor: (int HEATBED_PIN, Thermistor heatbedThermistor)
 		*/
 
-	ExtruderController extruderControllerA(_extruderA, HOTEND_A_PIN, _extruderThermistorA);
-	_extruderControllerA = extruderControllerA;
+	//ExtruderController extruderControllerA(_extruderA, HOTEND_A_PIN, _extruderThermistorA);
+	//_extruderControllerA = extruderControllerA;
 
-	HeatbedController heatbedController(HEATBED_PIN, _bedThermistor);
-	_heatbedController = heatbedController;
+	//HeatbedController heatbedController(HEATBED_PIN, _bedThermistor);
+	//_heatbedController = heatbedController;
 }
 
 void Ramps::setup()
@@ -116,13 +116,13 @@ void Ramps::setup()
 		*/
 	_ledIndicator.setup();
 	
-	_xMotor.setup();
-	_yMotor.setup();
-	_zMotor.setup();
+	_motorX.setup();
+	_motorY.setup();
+	_motorZ.setup();
 
-	_xEndstop.setup();
-	_yEndstop.setup();
-	_zEndstop.setup();
+	_endstopX.setup();
+	_endstopY.setup();
+	_endstopZ.setup();
 
 	_bedThermistor.setup();
 
@@ -137,10 +137,10 @@ void Ramps::setup()
 
 	_extruderControllerA.setup();
 
-	_heatbedController.setup();
+	//_heatbedController.setup();
 }
 
-void Ramps::loop(int ms)
+void Ramps::loop(unsigned long ms)
 {
 	/*	* Update data from components
 		*/
@@ -159,4 +159,34 @@ void Ramps::loop(int ms)
 LedIndicator Ramps::getLedIndicator()
 {
 	return _ledIndicator;
+}
+
+PoluluStepper Ramps::getMotorX()
+{
+	return _motorX;
+}
+
+PoluluStepper Ramps::getMotorY()
+{
+	return _motorY;
+}
+
+PoluluStepper Ramps::getMotorZ()
+{
+	return _motorZ;
+}
+
+EndstopSwitch Ramps::getEndstopX()
+{
+	return _endstopX;
+}
+
+EndstopSwitch Ramps::getEndstopY()
+{
+	return _endstopY;
+}
+
+EndstopSwitch Ramps::getEndstopZ()
+{
+	return _endstopZ;
 }

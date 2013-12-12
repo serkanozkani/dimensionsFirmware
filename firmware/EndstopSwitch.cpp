@@ -27,12 +27,13 @@ EndstopSwitch::EndstopSwitch(int interfacePin, bool normallyHigh)
 void EndstopSwitch::setup()
 {
 	pinMode(_pin, INPUT);
+	digitalWrite(_pin, HIGH); // Enable pullup resistor.
 }
 
 
-bool EndstopSwitch::getState()
+bool EndstopSwitch::triggered()
 {
 	// if normally high, and low, return true
 	
-	return (_normallyHigh != digitalRead(_pin));
+	if (_normallyHigh == digitalRead(_pin));
 }
