@@ -55,7 +55,8 @@ RampsCerebellum::RampsCerebellum()
 void RampsCerebellum::setup(const Ramps &rampsInstance)
 {
 	_rampsInstance = rampsInstance;
-	_emergencyStop = true;
+	_emergencyStop = false;
+	_error = 0;
 }
 
 
@@ -65,10 +66,11 @@ void RampsCerebellum::loop(unsigned long now)
 		emergencyStop();
 	}
 
-	if (_actionZeroX) {
+	if (_actionCalibrateX) {
 		_motor = _rampsInstance.getMotorX();
 		_endstop = _rampsInstance.getEndstopX();
 		_actionSeekingEndstop = true;
+		_actionCalibrateX = false;
 	}
 
 	if (_actionTestingEndstopX) {
@@ -76,9 +78,9 @@ void RampsCerebellum::loop(unsigned long now)
 			_endstop = _rampsInstance.getEndstopX();
 			Serial.println("The endstop state is: ");
 			Serial.println(_endstop.triggered()?" -true":"-false");
+			Serial.println("(rampsCerebellum.emergencyStop() to exit)");
 			_actionCycles = 0;
 		}
-		_actionCycles++;
 	}
 
 	if (_actionTestingMotorX) {
@@ -90,23 +92,56 @@ void RampsCerebellum::loop(unsigned long now)
 			_motor.enable();
 			_motor.fast();
 		} else if (_actionCycles == 2000) {
-			Serial.println("-Rotating clockwise...");
-			_motor.revolve(true);
-			Serial.println("-Done.");
-		} else if (_actionCycles == 3000) {
 			Serial.println("-Rotating counter-clockwise...");
 			_motor.revolve(false);
 			Serial.println("-Done.");
+		} else if (_actionCycles == 3000) {
+			Serial.println("-Rotating clockwise...");
+			_motor.revolve(true);
+			Serial.println("-Done.");
 		} else if (_actionCycles == 4000) {
-			emergencyStop();
+			emergencyStop(CERE_TEST_COMPLETE);
 			Serial.println("Done.");
 		}
-
-		_actionCycles++;
 	}
+
+	if (_actionSeekingEndstop) {
+
+		if (_actionCycles == 0) {
+			_motor.enable();
+			_motor.slow();
+
+			while (_endstop.triggered()) {
+				_motor.revolve(false);
+			}
+		} else if (_actionCycles == 10) {
+			_motor.normal();
+		} else if (_actionCycles == 100) {
+			_motor.fast();
+		} else if (_actionCycles == 1200) {
+			_motor.normal();
+		} else if (_actionCycles == 1300) {
+			_motor.slow();
+		} else if (_actionCycles == 1400) {
+			_motor.disable();
+			_actionSeekingEndstop = false;
+			emergencyStop(CERE_ERROR_CALIBRATE_HALTED_EARLY);
+		}
+
+		_motor.rotate(10, true);
+
+		if (_endstop.triggered()) {
+			_motor.slow();
+			while (_endstop.triggered()) {
+				_motor.rotate(1, false);
+			}
+			_actionSeekingEndstop = false;
+		}
+	}
+	_actionCycles++;
 }
 
-//rampsCerebellum.reset()
+// rampsCerebellum.reset()
 void RampsCerebellum::reset()
 {
 	LedIndicator ledIndicator = _rampsInstance.getLedIndicator();
@@ -119,30 +154,53 @@ void RampsCerebellum::reset()
 	delay(30);
 	ledIndicator.off();
 
+	_error = 0;
 }
 
-void RampsCerebellum::zeroDimensionX() {
+// rampsCerebellum.calibrateX()
+void RampsCerebellum::calibrateX() {
 	emergencyStop();
-	_actionZeroX = true;
+	_actionCalibrateX = true;
 }
 
-// rampsCerebellum.testEndstopX();
+// rampsCerebellum.testEndstopX()
 void RampsCerebellum::testEndstopX() {
 	emergencyStop();
 	_actionTestingEndstopX = true;
 }
 
 
-// rampsCerebellum.testMotorX(); 2911848903
+// rampsCerebellum.testMotorX()
 void RampsCerebellum::testMotorX() {
 	emergencyStop();
 	_actionTestingMotorX = true;
 }
 
+
 void RampsCerebellum::emergencyStop()
 {
+	emergencyStop(0);
+}
+
+// rampsCerebellum.emergencyStop()
+void RampsCerebellum::emergencyStop(int error)
+{
+	_error = error;
+
+	if (_error) {
+		Serial.println("Stop signal received:");
+		switch (_error) {
+			case CERE_TEST_COMPLETE:
+				Serial.println(">>testComplete");
+				break;
+			case CERE_ERROR_CALIBRATE_HALTED_EARLY:
+				Serial.println(">>calibrateReachedEstimatedMechanicalLimit");
+				break;
+		}
+	}
+
 	_actionCycles = 0;
-	_actionZeroX = false;
+	_actionCalibrateX = false;
 	_actionSeekingEndstop = false;
 	_actionTestingEndstopX = false;
 	_actionTestingMotorX = false;

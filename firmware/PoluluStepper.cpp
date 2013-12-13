@@ -18,6 +18,7 @@ PoluluStepper::PoluluStepper()
 	_stepPin = -1;
 	_enablePin = -1;
 	_directionPin = -1;
+	_delayPerHalfStep = DELAY_US_PER_HALF_STEP_NORMAL;
 	
 	_enabled = false;
 }
@@ -27,6 +28,7 @@ PoluluStepper::PoluluStepper(int stepPin, int enablePin, int directionPin)
 	_stepPin = stepPin;
 	_enablePin = enablePin;
 	_directionPin = directionPin;
+	_delayPerHalfStep = DELAY_US_PER_HALF_STEP_NORMAL;
 
 	_enabled = false;
 
@@ -86,22 +88,26 @@ void PoluluStepper::revolve (bool clockwise)
 
 	for (unsigned int i = MOTOR_STEPS_PER_REVOLUTION; i--; ) {
 		digitalWrite(_stepPin, HIGH);
-		delayMicroseconds(DELAY_US_PER_HALF_STEP_NORMAL);
+		delayMicroseconds(_delayPerHalfStep);
 		digitalWrite(_stepPin, LOW);
-		delayMicroseconds(DELAY_US_PER_HALF_STEP_NORMAL);
+		delayMicroseconds(_delayPerHalfStep);
 	}
 }
 
 void PoluluStepper::rotate( unsigned int numSteps, bool clockwise)
 {
-	enable();
-
 	setDirection(clockwise);
+	rotate(numSteps);
+}
+
+void PoluluStepper::rotate( unsigned int numSteps)
+{
+	enable();
 
 	for (unsigned int i = numSteps; i--; ) {
 		digitalWrite(_stepPin, HIGH);
-		delayMicroseconds(DELAY_US_PER_HALF_STEP_NORMAL);
+		delayMicroseconds(_delayPerHalfStep);
 		digitalWrite(_stepPin, LOW);
-		delayMicroseconds(DELAY_US_PER_HALF_STEP_NORMAL);
+		delayMicroseconds(_delayPerHalfStep);
 	}
 }

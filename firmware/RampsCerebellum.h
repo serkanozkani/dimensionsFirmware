@@ -15,6 +15,9 @@
 
 #include "Ramps.h"
 
+#define CERE_ERROR_CALIBRATE_HALTED_EARLY -1
+#define CERE_TEST_COMPLETE 1
+
 class RampsCerebellum
 {
   public:
@@ -23,9 +26,10 @@ class RampsCerebellum
 	void setup(const Ramps &rampsInstance);
 	void reset();
 	void emergencyStop();
+	void emergencyStop(int error);
 
-	// rampsCerebellum.zeroDimensionX() 2165811644
-	void zeroDimensionX();
+	// rampsCerebellum.calibrateX() 2165811644
+	void calibrateX();
 
 	// rampsCerebellum.testEndstopX()
 	void testEndstopX();
@@ -43,9 +47,10 @@ class RampsCerebellum
 	PoluluStepper _motor;
 	EndstopSwitch _endstop;
 
+	int _error;
 
 	unsigned long _actionCycles;
-	bool _actionZeroX;
+	bool _actionCalibrateX;
 	bool _actionSeekingEndstop;
 	bool _actionTestingEndstopX;
 	bool _actionTestingMotorX;

@@ -14,14 +14,14 @@
 #define MAX_TX_BUFFER 1024
 
 
-// rampsCerebellum.reset()
+// rampsCerebellum.reset() 288131393
 #define CERE_RESET 288131393
 
-// rampsCerebellum.emergencyStop()
+// rampsCerebellum.emergencyStop() 820371619
 #define CERE_EMERGENCY_STOP 820371619
 
-// rampsCerebellum.zeroDimensionX()
-#define CERE_ZERO_X 2165811644
+// rampsCerebellum.calibrateX() 3258116605
+#define CERE_CALIBRATE_X 3258116605
 
 // rampsCerebellum.testPoluluLibrary() 2155840244
 #define CERE_TEST_POLULU 2155840244
@@ -30,5 +30,5 @@
 #define CERE_TEST_ENDSTOP_X 4165360787
 
 
-// rampsCerebellum.testMotorX(); 2911848903
+// rampsCerebellum.testMotorX() 2911848903
 #define CERE_TEST_MOTOR_X 2911848903

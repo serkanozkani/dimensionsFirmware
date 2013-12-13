@@ -28,7 +28,9 @@ class PoluluStepper
 		void setDirection (bool reverse);
 
 		void revolve (bool reverse);
+
 		void rotate( unsigned int numSteps, bool reverse);
+		void rotate( unsigned int numSteps);
 
 		bool ready();
 

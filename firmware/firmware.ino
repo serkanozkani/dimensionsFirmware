@@ -57,6 +57,7 @@ void setup() {
 	Serial.println("rampsCerebellum.emergencyStop() // Stops any action");
 	Serial.println("rampsCerebellum.testEndstopX() // Starts watching sensor");
 	Serial.println("rampsCerebellum.testMotorX() // Rotates the motor 1 rev in each dir");
+	Serial.println("rampsCerebellum.calibrateX() // Zeroes X dimension");
 
 }
 
@@ -90,8 +91,8 @@ void loop() {
 				case CERE_RESET:
 					rampsCerebellum.reset();
 					break;
-				case CERE_ZERO_X:
-					rampsCerebellum.zeroDimensionX();
+				case CERE_CALIBRATE_X:
+					rampsCerebellum.calibrateX();
 					break;
 				case CERE_EMERGENCY_STOP:
 					rampsCerebellum.emergencyStop();
