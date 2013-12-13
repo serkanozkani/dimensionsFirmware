@@ -52,12 +52,12 @@ Ramps::Ramps()
 	_motorX = poluluStepperX;
 
 
-	//PoluluStepper poluluStepperY(Y_STEP_PIN, Y_ENABLE_PIN, Y_DIR_PIN);
-	//_motorY = poluluStepperY;
+	PoluluStepper poluluStepperY(Y_STEP_PIN, Y_ENABLE_PIN, Y_DIR_PIN);
+	_motorY = poluluStepperY;
 
 
-	//PoluluStepper poluluStepperZ(Z_STEP_PIN, Z_ENABLE_PIN, Z_DIR_PIN);
-	//_motorZ = poluluStepperZ;
+	PoluluStepper poluluStepperZ(Z_STEP_PIN, Z_ENABLE_PIN, Z_DIR_PIN);
+	_motorZ = poluluStepperZ;
 
 	PoluluStepper poluluStepperExtruderA(EXTRUDER_A_STEP_PIN, EXTRUDER_A_ENABLE_PIN, EXTRUDER_A_DIR_PIN);
 	_extruderA = poluluStepperExtruderA;

@@ -14,21 +14,26 @@
 #define MAX_TX_BUFFER 1024
 
 
-// rampsCerebellum.reset() 288131393
-#define CERE_RESET 288131393
+// printer.reset() 2549299330
+#define CERE_RESET 2549299330
 
-// rampsCerebellum.emergencyStop() 820371619
-#define CERE_EMERGENCY_STOP 820371619
+// printer.emergencyStop() 3263447268
+#define CERE_EMERGENCY_STOP 3263447268
 
-// rampsCerebellum.calibrateX() 3258116605
-#define CERE_CALIBRATE_X 3258116605
+// printer.calibrateX() 1126058462
+#define CERE_CALIBRATE_X 1126058462
 
-// rampsCerebellum.testPoluluLibrary() 2155840244
-#define CERE_TEST_POLULU 2155840244
+// printer.calibrateY() 1126058495
+#define CERE_CALIBRATE_Y 1126058495
 
-// rampsCerebellum.testEndstopX() 4165360787
-#define CERE_TEST_ENDSTOP_X 4165360787
+// printer.calibrateZ() 1126058528
+#define CERE_CALIBRATE_Z 1126058528
 
+// printer.testPoluluLibrary() 2129009589
+#define CERE_TEST_POLULU 2129009589
 
-// rampsCerebellum.testMotorX() 2911848903
-#define CERE_TEST_MOTOR_X 2911848903
+// printer.testEndstopX() 1636382900
+#define CERE_TEST_ENDSTOP_X 1636382900
+
+// printer.testMotorX() 779790760
+#define CERE_TEST_MOTOR_X 779790760
