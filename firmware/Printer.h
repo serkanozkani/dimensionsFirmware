@@ -49,6 +49,12 @@ class Printer
 	// Printer.testMotorX()
 	void testMotorX();
 
+	void cartesian(unsigned int x, unsigned int y);
+
+	void moveX (unsigned int steps, bool direction);
+
+	void moveY (unsigned int steps, bool direction);
+
 	void loop( unsigned long now);
 
   private:
@@ -71,6 +77,12 @@ class Printer
 	bool _actionTestingMotorX;
 	bool _emergencyStop;
 
+	unsigned int _stepsTodoX;
+	unsigned int _stepsTodoY;
+
+	unsigned int _sfoX;
+	unsigned int _sfoY;
+	unsigned int _sfoZ;
 
 	bool goalTryingToZeroX;
 

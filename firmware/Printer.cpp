@@ -44,20 +44,20 @@ void Printer::loop(unsigned long now)
 		emergencyStop();
 	}
 
-	if (_actionCalibrateX) {
-		_motor = _rampsInstance.getMotorX();
-		_endstop = _rampsInstance.getEndstopX();
-		_startDirection = CERE_MOTOR_X_PRIMARY_DIRECTION;
-		_actionSeekingEndstop = true;
-		_actionCalibrateX = false;
-	}
+	if (_actionCycles == 0) {
+		if (_actionCalibrateX) {
+			_motor = _rampsInstance.getMotorX();
+			_endstop = _rampsInstance.getEndstopX();
+			_startDirection = CERE_MOTOR_X_PRIMARY_DIRECTION;
+			_actionSeekingEndstop = true;
+		}
 
-	if (_actionCalibrateY) {
-		_motor = _rampsInstance.getMotorY();
-		_endstop = _rampsInstance.getEndstopY();
-		_startDirection = CERE_MOTOR_Y_PRIMARY_DIRECTION;
-		_actionSeekingEndstop = true;
-		_actionCalibrateY = false;
+		if (_actionCalibrateY) {
+			_motor = _rampsInstance.getMotorY();
+			_endstop = _rampsInstance.getEndstopY();
+			_startDirection = CERE_MOTOR_Y_PRIMARY_DIRECTION;
+			_actionSeekingEndstop = true;
+		}
 	}
 
 	if (_actionTestingEndstopX) {
@@ -124,6 +124,12 @@ void Printer::loop(unsigned long now)
 				_motor.rotate(1, !_startDirection);
 			}
 			_actionSeekingEndstop = false;
+			if (_actionCalibrateY) {
+				_sfoY = 0;
+			}
+			if (_actionCalibrateX) {
+				_sfoX = 0;
+			}
 		}
 	}
 	_actionCycles++;
@@ -161,6 +167,35 @@ void Printer::calibrateY() {
 void Printer::calibrateZ() {
 	emergencyStop();
 	_actionCalibrateZ = true;
+}
+
+// printer.cartesian(steps , steps)
+void Printer::cartesian(unsigned int x, unsigned int y){
+	unsigned int offX;
+	bool dirX;
+	unsigned int offY;
+	bool dirY;
+
+	dirX = (x > _sfoX) ^ CERE_MOTOR_X_PRIMARY_DIRECTION;
+	dirY = (y > _sfoY) ^ CERE_MOTOR_Y_PRIMARY_DIRECTION;
+
+	offX = abs(x - _sfoX);
+	offY = abs(y - _sfoY);
+
+	moveX (offX, dirX);
+	moveY (offY, dirY);
+}
+
+//
+void Printer::moveX (unsigned int x) {
+	_stepsTodoX = x;
+	_movingX = true;
+}
+
+//
+void Printer::moveY (unsigned int y) {
+	_stepsTodoY = y;
+	_movingY = true;
 }
 
 // printer.testEndstopX()
