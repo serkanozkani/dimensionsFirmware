@@ -30,6 +30,7 @@ this project is not functional, and new RepRap users should check out the [RepRa
 
 ## Project Timeline
     - [Reverse chronological order]
+    - 2013-12-15 Started Node.js test code
     - 2013-12-12 Tested [calibrateX, calibrateY] successfully
     - 2013-12-12 Tested [reset, emergencyStop, testEndstopX, testMotorX] successfully
     - 2013-12-11 Wrote simple command parser library.
