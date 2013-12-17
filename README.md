@@ -30,6 +30,9 @@ this project is not functional, and new RepRap users should check out the [RepRa
 
 ## Project Timeline
     - [Reverse chronological order]
+    - 2013-12-16 All tests pass
+    - 2013-12-16 New class CartesianController will handle all 2d motion.
+    - 2013-12-16 Massive changes to Ramps.cpp (making it a shared singleton instance)
     - 2013-12-15 Started Node.js test code
     - 2013-12-12 Tested [calibrateX, calibrateY] successfully
     - 2013-12-12 Tested [reset, emergencyStop, testEndstopX, testMotorX] successfully
