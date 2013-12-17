@@ -15,9 +15,9 @@
 class Thermistor
 {
 	public:
-		Thermistor();
-		Thermistor(int interfacePin, int lookupTable);
-		void setup();
+		Thermistor() {};
+		// (Removed a horrible constructor 2013-12-16)
+		void setup(int interfacePin, int lookupTable);
 		void loop();
 
 		int getDegreesCelsius();

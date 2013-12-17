@@ -28,28 +28,39 @@
 class Ramps
 {
   public:
-    Ramps();
+    static Ramps& instance()
+    {
+        static Ramps instance;
+        return instance;
+    }
+
     void setup();
     void loop(unsigned long ms);
 
-    PoluluStepper getMotorX();
-    PoluluStepper getMotorY();
-    PoluluStepper getMotorZ();
+    PoluluStepper * getMotorX();
+    PoluluStepper * getMotorY();
+    PoluluStepper * getMotorZ();
 
-    EndstopSwitch getEndstopX();
-    EndstopSwitch getEndstopY();
-    EndstopSwitch getEndstopZ();
+    EndstopSwitch * getEndstopX();
+    EndstopSwitch * getEndstopY();
+    EndstopSwitch * getEndstopZ();
 
-    LedIndicator getLedIndicator();
+    LedIndicator * getLedIndicator();
 
-    PoluluStepper getExtruderMotorA();
+    PoluluStepper * getExtruderMotorA();
 
-    ExtruderController getExtruderA();
+    ExtruderController * getExtruderA();
 
-    HeatbedController getHeatbed();
+    HeatbedController * getHeatbed();
 
-    
   private:
+    // 3 intentionally unimplemented constructors
+    // or operators to prevent extra instances.
+    Ramps() {};
+    Ramps(Ramps const&);
+    void operator=(Ramps const&);
+
+    // The rest is 
     PoluluStepper _motorX;
     PoluluStepper _motorY;
     PoluluStepper _motorZ;

@@ -16,19 +16,11 @@
 
 #include "ExtruderController.h"
 
-ExtruderController::ExtruderController ()
-{
-}
-
-ExtruderController::ExtruderController (PoluluStepper extruderMotor, int interfacePin, Thermistor hotendThermistor)
+void ExtruderController::setup(PoluluStepper extruderMotor, int interfacePin, Thermistor hotendThermistor)
 {
 	_extruderMotor = extruderMotor;
 	_hotendThermistor = hotendThermistor;
 	_pin = interfacePin;
-}
-
-void ExtruderController::setup()
-{
 	// No need to setup the extruder motor. Should be done via ramps.cpp
 	setRate(0);
 	setTemp(0);

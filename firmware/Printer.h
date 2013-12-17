@@ -14,22 +14,16 @@
 #define Printer_h
 
 #include "Ramps.h"
+#include "CartesianController.h"
 
-#define CERE_ERROR_CALIBRATE_HALTED_EARLY -1
 #define CERE_TEST_COMPLETE 1
-
-#define CERE_DIRECTION_CLOCKWISE true
-#define CERE_DIRECTION_ANTI_CLOCKWISE false
-
-#define CERE_MOTOR_X_PRIMARY_DIRECTION CERE_DIRECTION_CLOCKWISE
-#define CERE_MOTOR_Y_PRIMARY_DIRECTION CERE_DIRECTION_CLOCKWISE
 
 class Printer
 {
   public:
 	Printer();
 
-	void setup(const Ramps &rampsInstance);
+	void setup();
 	void reset();
 	void emergencyStop();
 	void emergencyStop(int error);
@@ -51,40 +45,31 @@ class Printer
 
 	void cartesian(unsigned int x, unsigned int y);
 
-	void moveX (unsigned int steps, bool direction);
+	void moveX (unsigned int stepX);
 
-	void moveY (unsigned int steps, bool direction);
+	void moveY (unsigned int stepY);
 
 	void loop( unsigned long now);
 
   private:
-	Ramps _rampsInstance;
+	CartesianController _cartesianController;
 
 	// Just one motor and endstop at a time are zeroed.
 	// Used to minimize code.
-	PoluluStepper _motor;
-	EndstopSwitch _endstop;
+	PoluluStepper * _motor;
+	EndstopSwitch * _endstop;
 
 	int _error;
 
 	unsigned long _actionCycles;
-	bool _actionCalibrateX;
-	bool _actionCalibrateY;
-	bool _actionCalibrateZ;
+	bool _actionCartesian;
+
 	bool _actionSeekingEndstop;
 	bool _startDirection;
 	bool _actionTestingEndstopX;
 	bool _actionTestingMotorX;
 	bool _emergencyStop;
 
-	unsigned int _stepsTodoX;
-	unsigned int _stepsTodoY;
-
-	unsigned int _sfoX;
-	unsigned int _sfoY;
-	unsigned int _sfoZ;
-
-	bool goalTryingToZeroX;
 
 };
 

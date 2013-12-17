@@ -37,3 +37,6 @@
 
 // printer.testMotorX() 779790760
 #define CERE_TEST_MOTOR_X 779790760
+
+// help()
+#define CERE_HELP 261238998

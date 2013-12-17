@@ -15,19 +15,11 @@
 
 #include "HeatbedController.h"
 
-
-HeatbedController::HeatbedController ()
-{
-}
-
-HeatbedController::HeatbedController (int interfacePin, Thermistor heatbedThermistor)
+void HeatbedController::setup(int interfacePin, Thermistor heatbedThermistor)
 {
 	_heatbedThermistor = heatbedThermistor;
 	_pin = interfacePin;
-}
 
-void HeatbedController::setup()
-{
 	// No need to setup the extruder motor. Should be done via ramps.cpp
 	setTemp(0);
 	_errorCode = 0;

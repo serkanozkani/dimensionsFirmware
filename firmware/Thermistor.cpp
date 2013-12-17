@@ -10,28 +10,18 @@
 	*/
 
 #include "Thermistor.h"
-#include "Arduino.h"
+#include "Arduino.h"	// Needed for byte type.
 
 
 #include "thermistorConstants.h"
 
-Thermistor::Thermistor()
-{
-	_pin = -1;
-	_lookupTable = -1;
-	_degreesCelsius = 9999;
-}
-
-Thermistor::Thermistor(int interfacePin, int lookupTable)
+void Thermistor::setup(int interfacePin, int lookupTable)
 {
 	_pin = interfacePin;
 	_lookupTable = lookupTable;
 	_degreesCelsius = 9999;
-}
 
-void Thermistor::setup()
-{
-	// No need to set up, since analog pins default to input.
+	// No need to set up input of interfacePin, since analog pins default to input.
 }
 
 

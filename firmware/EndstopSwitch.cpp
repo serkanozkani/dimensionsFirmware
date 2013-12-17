@@ -12,20 +12,10 @@
 #include "EndstopSwitch.h"
 #include "Arduino.h"
 
-EndstopSwitch::EndstopSwitch()
-{
-	_pin = -1;
-	_normallyHigh = false;
-}
-
-EndstopSwitch::EndstopSwitch(int interfacePin, bool normallyHigh)
+void EndstopSwitch::setup(int interfacePin, bool normallyHigh)
 {
 	_pin = interfacePin;
 	_normallyHigh = normallyHigh;
-}
-
-void EndstopSwitch::setup()
-{
 	pinMode(_pin, INPUT);
 	digitalWrite(_pin, HIGH); // Enable pullup resistor.
 }

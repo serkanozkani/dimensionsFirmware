@@ -16,9 +16,9 @@
 class LedIndicator
 {
 	public:
-		LedIndicator();
-		LedIndicator(int interfacePin);
-		void setup();
+		LedIndicator() {};
+		// (Removed a horrible constructor 2013-12-16)
+		void setup(int interfacePin);
 		void on();
 		void off();
 

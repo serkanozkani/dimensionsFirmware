@@ -10,8 +10,6 @@
 	*/
 
 #include "CommandParser.h"
-#include "Arduino.h"
-
 
 CommandParser::CommandParser() {
 	clear(0);

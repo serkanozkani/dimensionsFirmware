@@ -21,20 +21,28 @@
 #include "EndstopSwitch.h"
 #include "Thermistor.h"
 
+// Some Config
+#include "motors.h"
+
 // The "brainlessly simple" controllers
 #include "ExtruderController.h"
 #include "HeatbedController.h"
+
+// The more complex controller
+#include "CartesianController.h"
 
 Printer::Printer()
 {
 
 }
 
-void Printer::setup(const Ramps &rampsInstance)
+void Printer::setup()
 {
-	_rampsInstance = rampsInstance;
+	_cartesianController.reset();
+
 	_emergencyStop = false;
 	_error = 0;
+
 }
 
 
@@ -44,28 +52,10 @@ void Printer::loop(unsigned long now)
 		emergencyStop();
 	}
 
-	if (_actionCycles == 0) {
-		if (_actionCalibrateX) {
-			_motor = _rampsInstance.getMotorX();
-			_endstop = _rampsInstance.getEndstopX();
-			_startDirection = CERE_MOTOR_X_PRIMARY_DIRECTION;
-			_actionSeekingEndstop = true;
-		}
-
-		if (_actionCalibrateY) {
-			_motor = _rampsInstance.getMotorY();
-			_endstop = _rampsInstance.getEndstopY();
-			_startDirection = CERE_MOTOR_Y_PRIMARY_DIRECTION;
-			_actionSeekingEndstop = true;
-		}
-	}
-
 	if (_actionTestingEndstopX) {
 		if (_actionCycles == 2000) {
-			_endstop = _rampsInstance.getEndstopX();
-			Serial.println("The endstop state is: ");
-			Serial.println(_endstop.triggered()?" -true":"-false");
-			Serial.println("(Printer.emergencyStop() to exit)");
+			_endstop = (Ramps::instance()).getEndstopX();
+			Serial.println(_endstop->triggered()?"true":"false");
 			_actionCycles = 0;
 		}
 	}
@@ -73,134 +63,79 @@ void Printer::loop(unsigned long now)
 
 	if (_actionTestingMotorX) {
 
-		_motor = _rampsInstance.getMotorX();
+		_motor = (Ramps::instance()).getMotorX();
 			
-		if (_actionCycles == 1000) {
-			Serial.println("Testing X motor...");
-			_motor.enable();
-			_motor.fast();
-		} else if (_actionCycles == 2000) {
+		if (_actionCycles == 0) {
+			_motor->enable();
+			_motor->fast();
+		} else if (_actionCycles == 1000) {
 			Serial.println("-Rotating counter-clockwise...");
-			_motor.revolve(CERE_DIRECTION_ANTI_CLOCKWISE);
+			_motor->revolve(CERE_DIRECTION_ANTI_CLOCKWISE);
+			Serial.println("-Done.");
+		} else if (_actionCycles == 2000) {
+			Serial.println("-Rotating clockwise...");
+			_motor->revolve(CERE_DIRECTION_CLOCKWISE);
 			Serial.println("-Done.");
 		} else if (_actionCycles == 3000) {
-			Serial.println("-Rotating clockwise...");
-			_motor.revolve(CERE_DIRECTION_CLOCKWISE);
-			Serial.println("-Done.");
-		} else if (_actionCycles == 4000) {
 			emergencyStop(CERE_TEST_COMPLETE);
-			Serial.println("Done.");
+			Serial.println("ready");
 		}
 	}
 
-	if (_actionSeekingEndstop) {
+	if (_actionCartesian) {
+		_cartesianController.loop(now);
 
-		if (_actionCycles == 0) {
-			_motor.enable();
-			_motor.slow();
-
-			while (_endstop.triggered()) {
-				_motor.revolve(!_startDirection);
-			}
-		} else if (_actionCycles == 10) {
-			_motor.normal();
-		} else if (_actionCycles == 100) {
-			_motor.fast();
-		} else if (_actionCycles == 1200) {
-			_motor.normal();
-		} else if (_actionCycles == 1300) {
-			_motor.slow();
-		} else if (_actionCycles == 1400) {
-			_motor.disable();
-			_actionSeekingEndstop = false;
-			emergencyStop(CERE_ERROR_CALIBRATE_HALTED_EARLY);
-		}
-
-		_motor.rotate(10, _startDirection);
-
-		if (_endstop.triggered()) {
-			_motor.slow();
-			while (_endstop.triggered()) {
-				_motor.rotate(1, !_startDirection);
-			}
-			_actionSeekingEndstop = false;
-			if (_actionCalibrateY) {
-				_sfoY = 0;
-			}
-			if (_actionCalibrateX) {
-				_sfoX = 0;
-			}
+		if (_cartesianController.ready()) {
+			_actionCartesian = false;
+			Serial.println("ready");
 		}
 	}
+
 	_actionCycles++;
 }
 
 // Printer.reset()
 void Printer::reset()
 {
-	LedIndicator ledIndicator = _rampsInstance.getLedIndicator();
+	LedIndicator *ledIndicator = (Ramps::instance()).getLedIndicator();
 
-	ledIndicator.on();
+	ledIndicator->on();
 	delay(30);
-	ledIndicator.off();
+	ledIndicator->off();
 	delay(30);
-	ledIndicator.on();
+	ledIndicator->on();
 	delay(30);
-	ledIndicator.off();
+	ledIndicator->off();
+
+	_cartesianController.reset();
 
 	_error = 0;
+
+	Serial.println("ready");
 }
 
 // printer.calibrateX()
 void Printer::calibrateX() {
-	emergencyStop();
-	_actionCalibrateX = true;
+	_cartesianController.calibrateX();
+	_actionCartesian = true;
 }
 
 // printer.calibrateY()
 void Printer::calibrateY() {
-	emergencyStop();
-	_actionCalibrateY = true;
+	_cartesianController.calibrateY();
+	_actionCartesian = true;
 }
 
 // printer.calibrateZ()
 void Printer::calibrateZ() {
-	emergencyStop();
-	_actionCalibrateZ = true;
-}
-
-// printer.cartesian(steps , steps)
-void Printer::cartesian(unsigned int x, unsigned int y){
-	unsigned int offX;
-	bool dirX;
-	unsigned int offY;
-	bool dirY;
-
-	dirX = (x > _sfoX) ^ CERE_MOTOR_X_PRIMARY_DIRECTION;
-	dirY = (y > _sfoY) ^ CERE_MOTOR_Y_PRIMARY_DIRECTION;
-
-	offX = abs(x - _sfoX);
-	offY = abs(y - _sfoY);
-
-	moveX (offX, dirX);
-	moveY (offY, dirY);
-}
-
-//
-void Printer::moveX (unsigned int x) {
-	_stepsTodoX = x;
-	_movingX = true;
-}
-
-//
-void Printer::moveY (unsigned int y) {
-	_stepsTodoY = y;
-	_movingY = true;
+	//emergencyStop();
+	//_actionCalibrateZ = true;
 }
 
 // printer.testEndstopX()
 void Printer::testEndstopX() {
 	emergencyStop();
+	Serial.println("Send \"printer.emergencyStop()\\n\" to stop polling.");
 	_actionTestingEndstopX = true;
 }
 
@@ -226,30 +161,34 @@ void Printer::emergencyStop(int error)
 			case CERE_TEST_COMPLETE:
 				Serial.println(">>testComplete");
 				break;
-			case CERE_ERROR_CALIBRATE_HALTED_EARLY:
-				Serial.println(">>calibrateReachedEstimatedMechanicalLimit");
-				break;
 		}
 	}
 
 	_actionCycles = 0;
-	_actionCalibrateX = false;
+
+	_cartesianController.reset();
+	_actionCartesian = false;
+
 	_actionSeekingEndstop = false;
 	_actionTestingEndstopX = false;
 	_actionTestingMotorX = false;
+
+
 	_emergencyStop = false;
 
-	_motor = _rampsInstance.getMotorX();
-	_motor.disable();
+	_motor = (Ramps::instance()).getMotorX();
+	_motor->disable();
 
-	_motor = _rampsInstance.getMotorY();
-	_motor.disable();
+	_motor = (Ramps::instance()).getMotorY();
+	_motor->disable();
 
-	_motor = _rampsInstance.getMotorZ();
-	_motor.disable();
+	_motor = (Ramps::instance()).getMotorZ();
+	_motor->disable();
 
-	_motor = _rampsInstance.getMotorZ();
-	_motor.disable();
+	_motor = (Ramps::instance()).getMotorZ();
+	_motor->disable();
 
+
+	Serial.println("ready");
 
 }

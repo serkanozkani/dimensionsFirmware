@@ -12,20 +12,10 @@
 #include "LedIndicator.h"
 #include "Arduino.h"
 
-LedIndicator::LedIndicator()
-{
-	_pin = -1;
-	_on = false;
-}
-
-LedIndicator::LedIndicator(int interfacePin)
+void LedIndicator::setup(int interfacePin)
 {
 	_pin = interfacePin;
 	_on = false;
-}
-
-void LedIndicator::setup()
-{
 	pinMode(_pin, OUTPUT);
 	off();
 }

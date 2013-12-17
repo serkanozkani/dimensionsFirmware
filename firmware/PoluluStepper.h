@@ -16,9 +16,9 @@
 class PoluluStepper
 {
 	public:
-		PoluluStepper();
-		PoluluStepper(int stepPin, int enablePin, int directionPin);
-		void setup();
+		PoluluStepper() {};
+		// (Removed a horrible constructor 2013-12-16)
+		void setup(int stepPin, int enablePin, int directionPin, bool startDirection);
 		void enable();
 		void disable();
 
@@ -26,11 +26,11 @@ class PoluluStepper
 		void normal();
 		void slow();
 
-		void setDirection (bool reverse);
+		void setDirection (bool forward);
 
-		void revolve (bool reverse);
+		void revolve (bool forward);
 
-		void rotate( unsigned int numSteps, bool reverse);
+		void rotate( unsigned int numSteps, bool forward);
 		void rotate( unsigned int numSteps);
 
 		bool ready();
@@ -40,6 +40,8 @@ class PoluluStepper
 		int _enablePin;
 		int _directionPin;
 		
+		bool _startDirection;
+
 		bool _enabled;
 		unsigned int _delayPerHalfStep;
 };

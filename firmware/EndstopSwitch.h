@@ -15,9 +15,9 @@
 class EndstopSwitch
 {
 	public:
-		EndstopSwitch();
-		EndstopSwitch(int interfacePin, bool normallyHigh);
-		void setup();
+		EndstopSwitch() {};
+		// (Removed a horrible constructor 2013-12-16)
+		void setup(int interfacePin, bool normallyHigh);
 		
 		bool triggered();
 

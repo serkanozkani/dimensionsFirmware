@@ -18,9 +18,9 @@
 class HeatbedController
 {
 	public:
-		HeatbedController();
-		HeatbedController(int interfacePin, Thermistor heatbedThermistor);
-		void setup();
+		HeatbedController() {};
+		// (Removed a horrible constructor 2013-12-16)
+		void setup(int interfacePin, Thermistor heatbedThermistor);
 		void loop(int now);
 		
 		void setTemp (int degreesCelsius);

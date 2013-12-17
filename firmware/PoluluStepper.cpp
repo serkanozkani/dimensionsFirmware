@@ -13,30 +13,15 @@
 #include "motors.h"
 #include "Arduino.h"
 
-PoluluStepper::PoluluStepper()
-{
-	_stepPin = -1;
-	_enablePin = -1;
-	_directionPin = -1;
-	_delayPerHalfStep = DELAY_US_PER_HALF_STEP_NORMAL;
-	
-	_enabled = false;
-}
-
-PoluluStepper::PoluluStepper(int stepPin, int enablePin, int directionPin)
+void PoluluStepper::setup(int stepPin, int enablePin, int directionPin, bool startDirection)
 {
 	_stepPin = stepPin;
 	_enablePin = enablePin;
 	_directionPin = directionPin;
-	_delayPerHalfStep = DELAY_US_PER_HALF_STEP_NORMAL;
+	_startDirection = startDirection;
 
 	_enabled = false;
 
-	disable();
-}
-
-void PoluluStepper::setup()
-{
 	pinMode(_stepPin, OUTPUT);
 	pinMode(_enablePin, OUTPUT);
 	pinMode(_directionPin, OUTPUT);
@@ -71,20 +56,20 @@ void PoluluStepper::disable()
 	digitalWrite(_enablePin, HIGH);
 }
 
-void PoluluStepper::setDirection (bool clockwise)
+void PoluluStepper::setDirection (bool forward)
 {
-	if (clockwise) {
-		digitalWrite(_directionPin, LOW);
-	} else {
+	if (forward ^ _startDirection) {
 		digitalWrite(_directionPin, HIGH);
+	} else {
+		digitalWrite(_directionPin, LOW);
 	}
 }
 
-void PoluluStepper::revolve (bool clockwise)
+void PoluluStepper::revolve (bool forward)
 {
 	enable();
 
-	setDirection(clockwise);
+	setDirection(forward);
 
 	for (unsigned int i = MOTOR_STEPS_PER_REVOLUTION; i--; ) {
 		digitalWrite(_stepPin, HIGH);
@@ -94,9 +79,9 @@ void PoluluStepper::revolve (bool clockwise)
 	}
 }
 
-void PoluluStepper::rotate( unsigned int numSteps, bool clockwise)
+void PoluluStepper::rotate( unsigned int numSteps, bool forward)
 {
-	setDirection(clockwise);
+	setDirection(forward);
 	rotate(numSteps);
 }
 
