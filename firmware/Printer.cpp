@@ -126,6 +126,13 @@ void Printer::calibrateY() {
 	_actionCartesian = true;
 }
 
+// printer.navigate(x, y)
+void Printer::navigate(unsigned int x, unsigned int y)
+{
+	_cartesianController.navigate(x, y);
+	_actionCartesian = true;
+}
+
 // printer.calibrateZ()
 void Printer::calibrateZ() {
 	//emergencyStop();

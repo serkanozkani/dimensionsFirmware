@@ -31,6 +31,7 @@ class CartesianController
 		void calibrateX ();
 		void calibrateY ();
 
+		void navigate(unsigned int stepsX, unsigned int stepsY);
 
 		void reset();
 
@@ -52,6 +53,10 @@ class CartesianController
 		bool _zeroingX;
 		bool _zeroingY;
 
+		unsigned int _sftX;
+		unsigned int _sftY;
+
+		bool _movingToTarget;
 };
 
 #endif

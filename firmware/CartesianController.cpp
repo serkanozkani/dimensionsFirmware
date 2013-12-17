@@ -13,6 +13,7 @@
 #include "CartesianController.h"
 #include "PoluluStepper.h"
 #include "EndstopSwitch.h"
+#include "Arduino.h"
 
 CartesianController::CartesianController()
 {
@@ -20,6 +21,7 @@ CartesianController::CartesianController()
 	_endstopX = (Ramps::instance()).getEndstopX();
 	_motorY = (Ramps::instance()).getMotorY();
 	_endstopY = (Ramps::instance()).getEndstopY();
+	_movingToTarget = false;
 }
 
 void CartesianController::zeroX () 
@@ -27,6 +29,7 @@ void CartesianController::zeroX ()
 	_zeroedX = true;
 	_zeroingX = false;
 	_sfoX = 0;
+	_sftX = 0;
 }
 
 void CartesianController::zeroY () 
@@ -34,15 +37,24 @@ void CartesianController::zeroY ()
 	_zeroedY = true;
 	_zeroingY = false;
 	_sfoY = 0;
+	_sftY = 0;
 }
 
 void CartesianController::calibrateX ()
 {
+	if (!ready()) {
+		Serial.println("fail notReady");
+		return;
+	}
 	_zeroingX = true;
 }
 
 void CartesianController::calibrateY ()
 {
+	if (!ready()) {
+		Serial.println("fail notReady");
+		return;
+	}
 	_zeroingY = true;
 }
 
@@ -100,6 +112,60 @@ void CartesianController::loop(unsigned long now) {
 			_motorX->slow();
 		}
 		_motorX->rotate(10, true);
+	} else if (_movingToTarget) {
+		unsigned int diffX = abs(_sftX - _sfoX);
+		unsigned int diffY = abs(_sftY - _sfoY);
+		bool xForward = (_sftX < _sfoX);
+		bool yForward = (_sftY < _sfoY);
+
+		if (diffX > 10) {
+			if (diffX <= 1000) {
+				_motorX->normal();
+			} else {
+				_motorX->fast();
+			}
+			_motorX->rotate(10, xForward);
+			if (xForward) {
+				_sfoX -= 10;
+			} else {
+				_sfoX += 10;
+			}
+		} else if (diffX != 0){
+			_motorX->slow();
+			_motorX->rotate(diffX, xForward);
+			if (xForward) {
+				_sfoX -= diffX;
+			} else {
+				_sfoX += diffX;
+			}
+		}
+		if (diffY > 10) {
+			if (diffY <= 1000) {
+				_motorY->normal();
+			} else {
+				_motorY->fast();
+			}
+			_motorY->rotate(10, yForward);
+			if (yForward) {
+				_sfoY -= 10;
+			} else {
+				_sfoY += 10;
+			}
+		} else if (diffY != 0){
+			_motorY->slow();
+			_motorY->rotate(diffY, yForward);
+			if (yForward) {
+				_sfoY -= diffY;
+			} else {
+				_sfoY += diffY;
+			}
+		}
+		
+		if (diffY == 0 && diffX == 0) {
+			_movingToTarget = false;
+			_actionCycles = 0;
+			return;
+		}
 	}
 
 	_actionCycles++;
@@ -109,7 +175,7 @@ void CartesianController::loop(unsigned long now) {
 
 bool CartesianController::ready() {
 	if (_actionCycles != 0) return false;
-	if (_zeroingX || _zeroingY) return false;
+	if (_zeroingX || _zeroingY || _movingToTarget) return false;
 	
 	return true;
 }
@@ -123,7 +189,21 @@ void CartesianController::reset()
 	_zeroedY = false;
 }
 
+void CartesianController::navigate(unsigned int stepsX, unsigned int stepsY)
+{
+	if (!_zeroedX || !_zeroedY) {
+		Serial.println("fail notCalibrated");
+		return;
+	}
+	if (!ready()) {
+		Serial.println("fail notReady");
+		return;
+	}
 
+	_sftX = stepsX;
+	_sftY = stepsY;
+	_movingToTarget = true;
+}
 
 
 

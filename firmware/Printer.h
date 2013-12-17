@@ -43,7 +43,7 @@ class Printer
 	// Printer.testMotorX()
 	void testMotorX();
 
-	void cartesian(unsigned int x, unsigned int y);
+	void navigate(unsigned int x, unsigned int y);
 
 	void moveX (unsigned int stepX);
 

@@ -40,3 +40,6 @@
 
 // help()
 #define CERE_HELP 261238998
+
+// printer.navigate(x, y) 42975278
+#define CERE_NAVIGATE 42975278

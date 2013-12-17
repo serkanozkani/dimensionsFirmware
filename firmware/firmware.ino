@@ -100,6 +100,9 @@ void loop() {
 				case CERE_TEST_MOTOR_X:
 					printer.testMotorX();
 					break;
+				case CERE_NAVIGATE:
+					printer.navigate(param1, param2);
+					break;
 				case CERE_HELP:
 					Serial.println("printer is capable of: (Enter a line+newline into serial input.)");
 					Serial.println("printer.reset() // Blinks led");
