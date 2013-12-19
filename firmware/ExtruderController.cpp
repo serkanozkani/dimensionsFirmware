@@ -16,10 +16,10 @@
 
 #include "ExtruderController.h"
 
-void ExtruderController::setup(PoluluStepper extruderMotor, int interfacePin, Thermistor hotendThermistor)
+void ExtruderController::setup(PoluluStepper &extruderMotor, int interfacePin, Thermistor &hotendThermistor)
 {
-	_extruderMotor = extruderMotor;
-	_hotendThermistor = hotendThermistor;
+	_extruderMotor = &extruderMotor;
+	_hotendThermistor = &hotendThermistor;
 	_pin = interfacePin;
 	// No need to setup the extruder motor. Should be done via ramps.cpp
 	setRate(0);
@@ -35,7 +35,7 @@ void ExtruderController::disable(int errorCode)
 	// Stop heating no matter what.
 	digitalWrite(_pin, LOW);
 
-	_extruderMotor.disable();
+	_extruderMotor->disable();
 
 	// Handy tip for recovering from an overtemp:
 	// disable(0), enable, setTemp, wait, getTemp, setRate and we're back.
@@ -50,7 +50,7 @@ int ExtruderController::enable()
 
 	setRate(0);
 	setTemp(0);
-	_extruderMotor.enable();
+	_extruderMotor->enable();
 
 	return 0;
 }
@@ -61,7 +61,7 @@ int ExtruderController::getTemp()
 		return 9999;
 	}
 
-	return _hotendThermistor.getDegreesCelsius();
+	return (int) _hotendThermistor->getDegreesCelsius();
 }
 
 void ExtruderController::setRate(int mmHrRate)

@@ -20,16 +20,16 @@ class Thermistor
 		void setup(int interfacePin, int lookupTable);
 		void loop();
 
-		int getDegreesCelsius();
+		float getDegreesCelsius();
 
 	private:
 
-		int lookupAnalogReading (int encodedState, const short table[][2], int distinctMeasurements);
+		float lookupAnalogReading (int encodedState, const short table[][2], int distinctMeasurements);
 		
 		int _pin;
 
 		int _lookupTable;
-		int _degreesCelsius;
+		float _degreesCelsius;
 
 };
 

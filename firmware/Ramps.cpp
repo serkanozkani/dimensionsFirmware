@@ -24,7 +24,7 @@
 #include "Thermistor.h"
 
 // The potentially dangerous components, shoehorned into modules.
-#include "ExtruderController.h"
+//#include "ExtruderController.h"
 #include "HeatbedController.h"
 
 /*	* Ramps became a singleton. Why?
@@ -100,10 +100,10 @@ void Ramps::setup()
 		*
 		*/
 
-	// To be defined and tested...
+	_heatbedController.setup(HEATBED_PIN, _bedThermistor);
 }
 
-void Ramps::loop(unsigned long ms)
+void Ramps::loop(long ms)
 {
 	/*	* Update data from components
 		*/
@@ -118,9 +118,17 @@ void Ramps::loop(unsigned long ms)
 		*/
 
 	// To be defined and tested first...
-	//_heatbedController.loop(ms);
+	
+	_heatbedController.loop(ms);
+	
 	//_extruderControllerA.loop(ms);
 
+}
+
+void Ramps::allCold()
+{
+	_heatbedController.lockout();
+	//_extruderController.lockout();
 }
 
 LedIndicator* Ramps::getLedIndicator()
@@ -156,4 +164,9 @@ EndstopSwitch* Ramps::getEndstopY()
 EndstopSwitch* Ramps::getEndstopZ()
 {
 	return &_endstopZ;
+}
+
+Thermistor* Ramps::getHeatbedThermistor()
+{
+	return &_bedThermistor;
 }

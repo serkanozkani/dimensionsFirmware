@@ -43,3 +43,21 @@
 
 // printer.navigate(x, y) 42975278
 #define CERE_NAVIGATE 42975278
+
+// printer.status() 85226915
+#define CERE_STATUS 85226915
+
+// printer.testHotend() 2912022177
+#define CERE_TEST_HOTEND 2912022177
+
+// printer.testHeatbed() 851461740
+#define CERE_TEST_HEATBED 851461740
+
+// printer.lockout() 3036112128
+#define CERE_LOCKOUT 3036112128
+
+// printer.pollHeatbed() 3831784835
+#define CERE_READ_HEATBED 3831784835
+
+// printer.pollExtruder() 1335759817
+#define CERE_READ_EXTRUDER 1335759817

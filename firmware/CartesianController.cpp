@@ -207,3 +207,26 @@ void CartesianController::navigate(unsigned int stepsX, unsigned int stepsY)
 
 
 
+
+unsigned int CartesianController::status() {
+	unsigned int statusCode = 0;
+	if (_zeroingX) {
+		statusCode |= 0x1;
+	}
+	if (_zeroingY) {
+		statusCode |= 0x2;
+	}
+	if (_zeroedX) {
+		statusCode |= 0x4;
+	}
+	if (_zeroedY) {
+		statusCode |= 0x8;
+	}
+	if (_movingToTarget) {
+		statusCode |= 0x10;
+	}
+	if (_actionCycles != 0) {
+		statusCode |= 0x20;
+	}
+	return statusCode;
+}

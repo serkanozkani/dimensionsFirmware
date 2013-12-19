@@ -19,7 +19,7 @@ class ExtruderController
 	public:
 		ExtruderController() {};
 		// (Removed a horrible constructor 2013-12-16)
-		void setup(PoluluStepper extruderMotor, int interfacePin, Thermistor hotendThermistor);
+		void setup(PoluluStepper &extruderMotor, int interfacePin, Thermistor &hotendThermistor);
 		
 		void loop(unsigned long now);
 		
@@ -47,8 +47,8 @@ class ExtruderController
 		void loop_heater();
 		void loop_stepper();
 
-		PoluluStepper _extruderMotor;
-		Thermistor _hotendThermistor;
+		PoluluStepper* _extruderMotor;
+		Thermistor* _hotendThermistor;
 
 };
 

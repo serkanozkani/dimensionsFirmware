@@ -13,14 +13,14 @@
 #define HeatbedController_h
 
 #define HEATBED_EXCEPTION_OVERTEMP -1
-
+#define FIRE_ALARM_LOCKOUT -2
 
 class HeatbedController
 {
 	public:
 		HeatbedController() {};
 		// (Removed a horrible constructor 2013-12-16)
-		void setup(int interfacePin, Thermistor heatbedThermistor);
+		void setup(int interfacePin, Thermistor &heatbedThermistor);
 		void loop(int now);
 		
 		void setTemp (int degreesCelsius);
@@ -31,6 +31,7 @@ class HeatbedController
 		int enable();	// You need to next setTemp, isReady, setRate
 		void disable(int errorCode);	// Turns off the extruder motor, and heat
 
+		void lockout();
 	private:
 		int _pin;
 		int _targetTemp;
@@ -42,7 +43,7 @@ class HeatbedController
 		int _lastHeatCycle;
 		int _lastCoolCycle;
 		
-		Thermistor _heatbedThermistor;
+		Thermistor* _heatbedThermistor;
 
 };
 

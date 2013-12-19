@@ -25,14 +25,14 @@ void Thermistor::setup(int interfacePin, int lookupTable)
 }
 
 
-int Thermistor::getDegreesCelsius()
+float Thermistor::getDegreesCelsius()
 {
 	// Simply gets the last state as reported from the loop.
 
 	return _degreesCelsius;
 }
 
-int Thermistor::lookupAnalogReading (int encodedState, const short table[][2], int distinctMeasurements)
+float Thermistor::lookupAnalogReading (int encodedState, const short table[][2], int distinctMeasurements)
 {
 
 	int estimatedTemp = 9999;
@@ -48,11 +48,12 @@ int Thermistor::lookupAnalogReading (int encodedState, const short table[][2], i
 
 			// Now take the slope of the line, and estimate where T resides.
 
-			estimatedTemp = table[i][1] + (encodedState - table[i][0]) *
-							(table[i+1][1] - table[i][1] / 
-							 table[i+1][0] - table[i][0]);
+			estimatedTemp = table[i][1];
 
-			return estimatedTemp;
+			float adj = (float)(table[i-1][0] - table[i][0]) / 
+								(table[i][1] - table[i-1][1]);
+
+			return (adj* (table[i][0] - encodedState)) + estimatedTemp;
 		}
 	}
 

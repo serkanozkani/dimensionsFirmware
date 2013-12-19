@@ -46,7 +46,7 @@ void Printer::setup()
 }
 
 
-void Printer::loop(unsigned long now)
+void Printer::loop(long now)
 {
 	if (_emergencyStop) {
 		emergencyStop();
@@ -152,6 +152,41 @@ void Printer::testMotorX() {
 	_actionTestingMotorX = true;
 }
 
+// printer.status()
+int Printer::status()
+{
+	int statusCode = 0;
+
+	if (_error != 0) {
+		statusCode = _error;
+		return statusCode;
+	}
+
+	if (_actionCartesian) {
+		statusCode |= CERE_CARTESIAN_ID;
+		if (!_cartesianController.ready()) {
+			statusCode |= CERE_CARTESIAN_ID << 1;
+			statusCode |= _cartesianController.status();
+			return statusCode;
+		}
+	}
+
+	if (_actionSeekingEndstop) {
+		statusCode |= 0x1;
+	}
+
+	if (_actionTestingEndstopX) {
+		statusCode |= 0x2;
+	}
+
+	if (_actionTestingMotorX) {
+		statusCode |= 0x4;
+	}
+
+	return statusCode;
+}
+
+
 // printer.emergencyStop()
 void Printer::emergencyStop()
 {
@@ -198,4 +233,12 @@ void Printer::emergencyStop(int error)
 
 	Serial.println("ready");
 
+}
+
+
+// printer.pollHeatbed()
+float Printer::pollHeatbed ()
+{
+	Thermistor * heatbedTherm  = (Ramps::instance()).getHeatbedThermistor();
+	return heatbedTherm->getDegreesCelsius();
 }

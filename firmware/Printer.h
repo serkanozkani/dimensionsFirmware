@@ -18,6 +18,8 @@
 
 #define CERE_TEST_COMPLETE 1
 
+#define CERE_CARTESIAN_ID 0x100
+
 class Printer
 {
   public:
@@ -43,13 +45,16 @@ class Printer
 	// Printer.testMotorX()
 	void testMotorX();
 
+	void moveX (unsigned int stepX);
+	void moveY (unsigned int stepY);
 	void navigate(unsigned int x, unsigned int y);
 
-	void moveX (unsigned int stepX);
+	// Printer.pollHeatbed()
+	float pollHeatbed();
 
-	void moveY (unsigned int stepY);
+	void loop( long now);
 
-	void loop( unsigned long now);
+	int status();
 
   private:
 	CartesianController _cartesianController;

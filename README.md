@@ -30,6 +30,9 @@ this project is not functional, and new RepRap users should check out the [RepRa
 
 ## Project Timeline
     - [Reverse chronological order]
+    - 2013-12-19 Api version bump. 0.2.0
+    - 2013-12-19 Started [testHotend, testHeatbed, pollExtruder]
+    - 2013-12-19 Tested [navigate, status, lockout, pollHeatbed]
     - 2013-12-16 All tests pass
     - 2013-12-16 New class CartesianController will handle all 2d motion.
     - 2013-12-16 Massive changes to Ramps.cpp (making it a shared singleton instance)

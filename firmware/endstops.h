@@ -9,6 +9,35 @@
 	* Written: 2013-12-10
 	*/
 
+/*	*	You'll need to check if your switches are normally open, or normally closed.
+	*	
+	*	EndstopSwitch utilizes the AtMega chip's pullup resistors.
+	*	
+	*	Switch
+	*
+	*    vcc         _ATMEGA_
+	*     | +       | vcc     pullup
+	*     -         |  |   /  resistor
+	*    ---    / _ | [ ]   
+	* gnd |____/  |_|__|__data
+	*    
+	*   Normally open:
+	*		Use SWITCH_TYPE_NORMALLY_HIGH
+	*/
+
+/*	*	Switch
+	*
+	*    vcc         _ATMEGA_
+	*     | +       | vcc     pullup
+	*     -         |  |   /  resistor
+	*    ---    _+= | [ ]   
+	* gnd |____// |_|__|__data
+	*    
+	*   Normally closed:
+	*		Use SWITCH_TYPE_NORMALLY_LOW
+	*/
+
+
 #ifndef endstops_h
 #define endstops_h
 

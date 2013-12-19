@@ -35,6 +35,7 @@ class CartesianController
 
 		void reset();
 
+		unsigned int status();
 	private:
 
 		PoluluStepper * _motorX;

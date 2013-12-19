@@ -15,9 +15,9 @@
 
 #include "HeatbedController.h"
 
-void HeatbedController::setup(int interfacePin, Thermistor heatbedThermistor)
+void HeatbedController::setup(int interfacePin, Thermistor &heatbedThermistor)
 {
-	_heatbedThermistor = heatbedThermistor;
+	_heatbedThermistor = &heatbedThermistor;
 	_pin = interfacePin;
 
 	// No need to setup the extruder motor. Should be done via ramps.cpp
@@ -25,13 +25,23 @@ void HeatbedController::setup(int interfacePin, Thermistor heatbedThermistor)
 	_errorCode = 0;
 
 	pinMode(_pin, OUTPUT);
-	
+	Serial.write ("Hot item set up on pin: ");
+	Serial.println(interfacePin, DEC);
+
 }
 
 void HeatbedController::disable(int errorCode)
 {
 	// Stop heating no matter what.
 	digitalWrite(_pin, LOW);
+
+	if (errorCode != 0) {
+		Serial.write ("Hot item disabled on pin: ");
+	} else if (_errorCode == FIRE_ALARM_LOCKOUT) {
+		Serial.write ("Hot item still in lockout: ");
+		errorCode = _errorCode;
+	}
+	Serial.println(_pin, DEC);
 
 	// Handy tip for recovering from an overtemp:
 	// disable(0), enable, setTemp, wait, getTemp, setRate and we're back.
@@ -43,6 +53,9 @@ int HeatbedController::enable()
 	if (_errorCode != 0) {
 		return _errorCode;
 	}
+
+	Serial.write ("Hot item enabled on pin: ");
+	Serial.println(_pin, DEC);
 
 	setTemp(0);
 
@@ -60,11 +73,16 @@ int HeatbedController::getTemp()
 		return 9999;
 	}
 
-	return _heatbedThermistor.getDegreesCelsius();
+	return (int) _heatbedThermistor->getDegreesCelsius();
 }
 
 void HeatbedController::loop(int now)
 {
+	if (_errorCode != 0) {
+		digitalWrite(_pin, LOW);
+		return;
+	}
+
 	int degreesCelsius = getTemp();
 
 	if (degreesCelsius < _targetTemp && _targetTemp < 350) {
@@ -103,4 +121,8 @@ void HeatbedController::loop(int now)
 
 	// Duty cycle understanding, and auto calibration ...how?
 
+}
+
+void HeatbedController::lockout() {
+	disable(FIRE_ALARM_LOCKOUT);
 }

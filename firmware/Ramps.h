@@ -35,7 +35,9 @@ class Ramps
     }
 
     void setup();
-    void loop(unsigned long ms);
+    void loop(long ms);
+
+    void allCold();
 
     PoluluStepper * getMotorX();
     PoluluStepper * getMotorY();
@@ -52,6 +54,7 @@ class Ramps
     ExtruderController * getExtruderA();
 
     HeatbedController * getHeatbed();
+    Thermistor* getHeatbedThermistor();
 
   private:
     // 3 intentionally unimplemented constructors

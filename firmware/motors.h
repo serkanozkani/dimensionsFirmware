@@ -12,6 +12,25 @@
 #ifndef motors_h
 #define motors_h
 
+/*	* This file is highly variable, 
+	* because stepper motors come in many various 
+	* forms, spin characteristics, and speed limitations.
+	*
+	*/
+
+/*	* At this point, if you have not enabled the
+	* heat elements it would be safe to test out the motors,
+	* and calibrate them.
+
+	* Note: metric resolution and step ratio is calibrated via
+	*   software. Our cartesian graph is based on steps, not
+	*	mm or any other standard unit.
+	*
+	* This is designed to minimize floating point calculations 
+	*  on the arduino platform, and make it more efficent for
+	*  beizer curve plotting.
+	*/
+
 #define MOTOR_STEPS_PER_REVOLUTION 3200
 
 #define DELAY_US_PER_HALF_STEP_SLOW 1000
