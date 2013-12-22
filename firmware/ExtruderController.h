@@ -14,14 +14,16 @@
 
 #define EXTRUDER_EXCEPTION_OVERTEMP -1
 
+#include "HeaterController.h"
+
 class ExtruderController
 {
 	public:
 		ExtruderController() {};
 		// (Removed a horrible constructor 2013-12-16)
-		void setup(PoluluStepper &extruderMotor, int interfacePin, Thermistor &hotendThermistor);
+		void setup(PoluluStepper &extruderMotor, HeaterController &heaterController);
 		
-		void loop(unsigned long now);
+		void loop(long now);
 		
 		void setRate (int mmHrRate);
 		void setTemp (int degreesCelsius);
@@ -33,22 +35,15 @@ class ExtruderController
 		void disable(int errorCode);	// Turns off the extruder motor, and heat
 
 	private:
-		int _pin;
-		int _targetTemp;
+
 		int _mmHrRate;
-		bool _activelyHeating;
 
 		int _errorCode;
 
-		int _lastHeatCycle;
-		int _lastCoolCycle;
-		int _lastStepperCycle;
-
-		void loop_heater();
-		void loop_stepper();
+		long _nextStepperCycle;
 
 		PoluluStepper* _extruderMotor;
-		Thermistor* _hotendThermistor;
+		HeaterController* _heaterController;
 
 };
 

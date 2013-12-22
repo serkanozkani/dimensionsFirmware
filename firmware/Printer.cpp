@@ -26,7 +26,7 @@
 
 // The "brainlessly simple" controllers
 #include "ExtruderController.h"
-#include "HeatbedController.h"
+#include "HeaterController.h"
 
 // The more complex controller
 #include "CartesianController.h"
@@ -56,7 +56,7 @@ void Printer::loop(long now)
 		if (_actionCycles == 2000) {
 			_endstop = (Ramps::instance()).getEndstopX();
 			Serial.println(_endstop->triggered()?"true":"false");
-			_actionCycles = 0;
+			_actionCycles = 1;
 		}
 	}
 
@@ -87,6 +87,49 @@ void Printer::loop(long now)
 
 		if (_cartesianController.ready()) {
 			_actionCartesian = false;
+			Serial.println("ready");
+		}
+	}
+
+	if (_actionTestingHeatbed) {
+		if (_actionCycles == 0) {
+			Serial.println("Testing heatbed");
+			(Ramps::instance()).setHeatbedTemp(60);
+		} else if (_actionCycles == 2000) {
+			int temp = (Ramps::instance()).pollHeatbed();
+			Serial.write("Heatbed Temp: (deg C) ");
+			Serial.println(temp);
+			
+			if (temp >= 60) {
+				stopTestingHeatbed();
+				Serial.println("ready");
+			}
+			_actionCycles = 1;
+
+		}
+	}
+
+	if (_actionTestingExtruder) {
+		if (_actionCycles == 0) {
+			Serial.println("Testing extruder");
+			ExtruderController* extruder = (Ramps::instance()).getExtruderA();
+			extruder->setTemp(180);
+		} else if (_actionCycles == 2000) {
+			ExtruderController* extruder = (Ramps::instance()).getExtruderA();
+			int temp = extruder->getTemp();
+			Serial.write("Extruder Temp: (deg C) ");
+			Serial.println(temp);
+			
+			if (temp >= 180) {
+				extruder->setRate(40);
+			} else {
+				_actionCycles = 1;
+			}
+		} else if (_actionCycles == 40000) {
+			ExtruderController* extruder = (Ramps::instance()).getExtruderA();
+			_actionTestingExtruder = false;
+			extruder->setRate(0);
+			extruder->setTemp(0);
 			Serial.println("ready");
 		}
 	}
@@ -183,6 +226,14 @@ int Printer::status()
 		statusCode |= 0x4;
 	}
 
+	if (_actionTestingHeatbed) {
+		statusCode |= 0x8;
+	}
+	
+	if (_actionTestingExtruder) {
+		statusCode |= 0x10;
+	}
+
 	return statusCode;
 }
 
@@ -215,6 +266,9 @@ void Printer::emergencyStop(int error)
 	_actionTestingEndstopX = false;
 	_actionTestingMotorX = false;
 
+	if (_actionTestingHeatbed) {
+		stopTestingHeatbed();
+	}
 
 	_emergencyStop = false;
 
@@ -241,4 +295,22 @@ float Printer::pollHeatbed ()
 {
 	Thermistor * heatbedTherm  = (Ramps::instance()).getHeatbedThermistor();
 	return heatbedTherm->getDegreesCelsius();
+}
+
+void Printer::testHeatbed() 
+{
+	_actionTestingHeatbed = true;
+	_actionCycles = 0;
+}
+
+void Printer::testExtruder() 
+{
+	_actionTestingExtruder = true;
+	_actionCycles = 0;
+}
+
+void Printer::stopTestingHeatbed()
+{
+	(Ramps::instance()).setHeatbedTemp(0);
+	_actionTestingHeatbed = false;
 }

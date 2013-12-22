@@ -56,6 +56,10 @@ class Printer
 
 	int status();
 
+	void testHeatbed();
+	void testExtruder();
+	void stopTestingHeatbed();
+
   private:
 	CartesianController _cartesianController;
 
@@ -73,7 +77,11 @@ class Printer
 	bool _startDirection;
 	bool _actionTestingEndstopX;
 	bool _actionTestingMotorX;
+	bool _actionTestingHeatbed;
+	bool _actionTestingExtruder;
+
 	bool _emergencyStop;
+
 
 
 };

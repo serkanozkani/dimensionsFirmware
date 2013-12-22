@@ -23,7 +23,7 @@
 
 // The "brainlessly simple" controllers
 #include "ExtruderController.h"
-#include "HeatbedController.h"
+#include "HeaterController.h"
 
 class Ramps
 {
@@ -38,6 +38,8 @@ class Ramps
     void loop(long ms);
 
     void allCold();
+    void setHeatbedTemp(int degreesCelsius);
+    void setHotendTemp(int degreesCelsius);
 
     PoluluStepper * getMotorX();
     PoluluStepper * getMotorY();
@@ -49,12 +51,14 @@ class Ramps
 
     LedIndicator * getLedIndicator();
 
-    PoluluStepper * getExtruderMotorA();
-
     ExtruderController * getExtruderA();
 
-    HeatbedController * getHeatbed();
+    HeaterController * getHeatbed();
     Thermistor* getHeatbedThermistor();
+
+    int pollHeatbed();
+    int pollExtruder();
+
 
   private:
     // 3 intentionally unimplemented constructors
@@ -83,7 +87,8 @@ class Ramps
 
     ExtruderController _extruderControllerA;
 
-    HeatbedController _heatbedController;
+    HeaterController _heatbedController;
+    HeaterController _extruderHeater;
 };
 
 #endif

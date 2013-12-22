@@ -25,7 +25,7 @@
 
 // The potentially dangerous components, shoehorned into modules.
 //#include "ExtruderController.h"
-#include "HeatbedController.h"
+#include "HeaterController.h"
 
 /*	* Ramps became a singleton. Why?
 	*
@@ -101,6 +101,9 @@ void Ramps::setup()
 		*/
 
 	_heatbedController.setup(HEATBED_PIN, _bedThermistor);
+	_extruderHeater.setup(HOTEND_A_PIN, _extruderThermistorA);
+
+	_extruderControllerA.setup(_extruderA, _extruderHeater);
 }
 
 void Ramps::loop(long ms)
@@ -120,15 +123,14 @@ void Ramps::loop(long ms)
 	// To be defined and tested first...
 	
 	_heatbedController.loop(ms);
-	
-	//_extruderControllerA.loop(ms);
+	_extruderControllerA.loop(ms);
 
 }
 
 void Ramps::allCold()
 {
 	_heatbedController.lockout();
-	//_extruderController.lockout();
+	_extruderHeater.lockout();
 }
 
 LedIndicator* Ramps::getLedIndicator()
@@ -169,4 +171,27 @@ EndstopSwitch* Ramps::getEndstopZ()
 Thermistor* Ramps::getHeatbedThermistor()
 {
 	return &_bedThermistor;
+}
+
+void Ramps::setHeatbedTemp(int degreesCelsius)
+{
+	_heatbedController.setTemp(degreesCelsius);
+}
+
+void Ramps::setHotendTemp(int degreesCelsius)
+{
+	_extruderControllerA.setTemp(degreesCelsius);
+}
+
+int Ramps::pollHeatbed() {
+	_heatbedController.getTemp();
+}
+
+int Ramps::pollExtruder() {
+	_extruderControllerA.getTemp();
+}
+
+ExtruderController* Ramps::getExtruderA()
+{
+	return &_extruderControllerA;
 }

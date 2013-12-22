@@ -1,4 +1,5 @@
-/*	* HeatbedController.cpp
+
+/*	* pinoutHeaterController.cpp
 	*
 	* This file is subject to the terms and conditions defined in
 	* file 'LICENSE', which is part of this source code package.
@@ -13,11 +14,11 @@
 #include "Arduino.h"
 
 
-#include "HeatbedController.h"
+#include "HeaterController.h"
 
-void HeatbedController::setup(int interfacePin, Thermistor &heatbedThermistor)
+void HeaterController::setup(int interfacePin, Thermistor &heaterThermistor)
 {
-	_heatbedThermistor = &heatbedThermistor;
+	_heaterThermistor = &heaterThermistor;
 	_pin = interfacePin;
 
 	// No need to setup the extruder motor. Should be done via ramps.cpp
@@ -30,7 +31,7 @@ void HeatbedController::setup(int interfacePin, Thermistor &heatbedThermistor)
 
 }
 
-void HeatbedController::disable(int errorCode)
+void HeaterController::disable(int errorCode)
 {
 	// Stop heating no matter what.
 	digitalWrite(_pin, LOW);
@@ -48,7 +49,7 @@ void HeatbedController::disable(int errorCode)
 	_errorCode = errorCode;
 }
 
-int HeatbedController::enable()
+int HeaterController::enable()
 {
 	if (_errorCode != 0) {
 		return _errorCode;
@@ -62,24 +63,34 @@ int HeatbedController::enable()
 	return 0;
 }
 
-void HeatbedController::setTemp(int degreesCelsius)
+void HeaterController::setTemp(int degreesCelsius)
 {
 	_targetTemp = degreesCelsius;
+	_nextCheck = 0;
 }
 
-int HeatbedController::getTemp()
+int HeaterController::getTemp()
 {
 	if (_errorCode != 0) {
 		return 9999;
 	}
 
-	return (int) _heatbedThermistor->getDegreesCelsius();
+	return (int) _heaterThermistor->getDegreesCelsius();
 }
 
-void HeatbedController::loop(int now)
+void HeaterController::loop(int now)
 {
 	if (_errorCode != 0) {
 		digitalWrite(_pin, LOW);
+		return;
+	}
+	if (_nextCheck < now) {
+		if (_activelyHeating) {
+			_nextCheck = now + 100;
+		} else {
+			_nextCheck = now + 1000;
+		}
+	} else {
 		return;
 	}
 
@@ -104,7 +115,7 @@ void HeatbedController::loop(int now)
 		// 2. it sees getTemp as returning an absurdedly high temperature
 		// 	to which it will place the entire machine in a recoverable quarantine state.
 
-		disable(HEATBED_EXCEPTION_OVERTEMP);
+		disable(HEATER_EXCEPTION_OVERTEMP);
 
 	} else if (degreesCelsius > _targetTemp) {
 
@@ -123,6 +134,6 @@ void HeatbedController::loop(int now)
 
 }
 
-void HeatbedController::lockout() {
+void HeaterController::lockout() {
 	disable(FIRE_ALARM_LOCKOUT);
 }

@@ -47,8 +47,8 @@
 // printer.status() 85226915
 #define CERE_STATUS 85226915
 
-// printer.testHotend() 2912022177
-#define CERE_TEST_HOTEND 2912022177
+// printer.testExtruder() 1769345490
+#define CERE_TEST_EXTRUDER 1769345490
 
 // printer.testHeatbed() 851461740
 #define CERE_TEST_HEATBED 851461740

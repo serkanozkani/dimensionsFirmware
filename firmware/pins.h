@@ -69,10 +69,9 @@
 #define PS_ON_PIN          12
 
 // These are the N-channel switched 12V powered outputs 
-#define HOTEND_A_PIN       10	// (Extruder)
-#define HOTEND_B_PIN       9	// (Extruder)
 #define HEATBED_PIN        8	// (Heatbed)
-
+#define HOTEND_B_PIN       9	// (Extruder)
+#define HOTEND_A_PIN       10	// (Extruder)
 
 #define TEMP_BED_PIN 			13   // ANALOG NUMBERING / T0
 #define TEMP_EXTRUDER_A_PIN 	14   // ANALOG NUMBERING / T1

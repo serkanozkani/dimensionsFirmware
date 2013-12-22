@@ -26,7 +26,7 @@
 #ifndef ignition_h
 #define ignition_h
 
-#define REPT_HOTEND_ENABLED false
+#define REPT_HOTEND_ENABLED true
 
 #define REPT_HEATBED_ENABLED true
 

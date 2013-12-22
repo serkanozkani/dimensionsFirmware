@@ -184,15 +184,19 @@ void loop() {
 				case CERE_STATUS:
 					Serial.println(printer.status(), DEC);
 					break;
-				case CERE_TEST_HOTEND:
+				case CERE_TEST_EXTRUDER:
 					if ( !REPT_HOTEND_ENABLED ) {
 						Serial.println("The hotend is not enabled.");
+						break;
 					}
+					printer.testExtruder();
 					break;
 				case CERE_TEST_HEATBED:
 					if ( !REPT_HEATBED_ENABLED ) {
 						Serial.println("The heatbed is not enabled.");
+						break;
 					}
+					printer.testHeatbed();
 					break;
 				case CERE_LOCKOUT:
 					// Turn off serial comms.
@@ -216,13 +220,14 @@ void loop() {
 					Serial.println("printer.testEndstopX() // Starts watching sensor");
 					Serial.println("printer.testMotorX() // Rotates the motor 1 rev in each dir");
 					Serial.println("printer.calibrateX() // Zeroes X dimension (X or Y supported)");
-					Serial.println("help() // this help");
 					Serial.println("printer.navigate(x, y) // moves extruder to point");
+					Serial.println("help() // this help v0.1.0");
 					Serial.println("printer.lockout() // for external fire sensor code");
-					Serial.println("printer.testHeatbed() // power cycles the heatbed briefly");
-					Serial.println("printer.testHotend() // not enabled");
+					Serial.println("printer.testHeatbed() // temp cycles the heatbed briefly");
+					Serial.println("printer.testHotend() // place hotend in center of board, one dim at a time, raises 10mm, heats, exrudes, cools");
 					Serial.println("printer.status() // int of printer status: 0 = ready");
 					Serial.println("printer.pollHeatbed() // float heatbed temperature");
+					Serial.println("help() // this help v0.2.0");
 					break;
 				default:
 					Serial.println (hash);

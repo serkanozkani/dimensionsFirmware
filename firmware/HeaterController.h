@@ -1,4 +1,4 @@
-/*	* HeatbedController.h
+/*	* HeaterController.h
 	*
 	* This file is subject to the terms and conditions defined in
 	* file 'LICENSE', which is part of this source code package.
@@ -9,18 +9,18 @@
 	* Written: 2013-12-10
 	*/
 
-#ifndef HeatbedController_h
-#define HeatbedController_h
+#ifndef HeaterController_h
+#define HeaterController_h
 
-#define HEATBED_EXCEPTION_OVERTEMP -1
+#define HEATER_EXCEPTION_OVERTEMP -1
 #define FIRE_ALARM_LOCKOUT -2
 
-class HeatbedController
+class HeaterController
 {
 	public:
-		HeatbedController() {};
+		HeaterController() {};
 		// (Removed a horrible constructor 2013-12-16)
-		void setup(int interfacePin, Thermistor &heatbedThermistor);
+		void setup(int interfacePin, Thermistor &heaterThermistor);
 		void loop(int now);
 		
 		void setTemp (int degreesCelsius);
@@ -38,12 +38,14 @@ class HeatbedController
 
 		int _errorCode;
 
+		long _nextCheck;
+
 		bool _activelyHeating;
 
 		int _lastHeatCycle;
 		int _lastCoolCycle;
 		
-		Thermistor* _heatbedThermistor;
+		Thermistor* _heaterThermistor;
 
 };
 

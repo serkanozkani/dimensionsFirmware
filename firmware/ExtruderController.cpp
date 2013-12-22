@@ -15,30 +15,25 @@
 
 
 #include "ExtruderController.h"
+#include "HeaterController.h"
 
-void ExtruderController::setup(PoluluStepper &extruderMotor, int interfacePin, Thermistor &hotendThermistor)
+void ExtruderController::setup(PoluluStepper &extruderMotor, HeaterController &heaterController)
 {
 	_extruderMotor = &extruderMotor;
-	_hotendThermistor = &hotendThermistor;
-	_pin = interfacePin;
+	_heaterController = &heaterController;
+
 	// No need to setup the extruder motor. Should be done via ramps.cpp
 	setRate(0);
 	setTemp(0);
 	_errorCode = 0;
-
-	pinMode(_pin, OUTPUT);
 	
 }
 
 void ExtruderController::disable(int errorCode)
 {
-	// Stop heating no matter what.
-	digitalWrite(_pin, LOW);
-
+	_heaterController->disable(errorCode);
 	_extruderMotor->disable();
 
-	// Handy tip for recovering from an overtemp:
-	// disable(0), enable, setTemp, wait, getTemp, setRate and we're back.
 	_errorCode = errorCode;
 }
 
@@ -52,16 +47,15 @@ int ExtruderController::enable()
 	setTemp(0);
 	_extruderMotor->enable();
 
+	_heaterController->disable(0);
+	_heaterController->enable();
+
 	return 0;
 }
 
 int ExtruderController::getTemp()
 {
-	if (_errorCode != 0) {
-		return 9999;
-	}
-
-	return (int) _hotendThermistor->getDegreesCelsius();
+	return _heaterController->getTemp();
 }
 
 void ExtruderController::setRate(int mmHrRate)
@@ -71,47 +65,16 @@ void ExtruderController::setRate(int mmHrRate)
 
 void ExtruderController::setTemp(int degreesCelsius)
 {
-	_targetTemp = degreesCelsius;
+	return _heaterController->setTemp(degreesCelsius);
 }
 
-void ExtruderController::loop(unsigned long now)
+void ExtruderController::loop(long now)
 {
-	int degreesCelsius = getTemp();
+	_heaterController->loop(now);
 
-	if (degreesCelsius < _targetTemp && _targetTemp < 350) {
-		
-		// Cool. Heat according to the duty cycle formula.
+	if (_nextStepperCycle < now && _heaterController->getTemp() >= 200) {
+		_nextStepperCycle = now + 100;
 
-		if (_activelyHeating == false) {
-			_lastHeatCycle = now;
-			_activelyHeating = true;
-			digitalWrite(_pin, HIGH);
-		}
-
-	} else if (_targetTemp > 350 || degreesCelsius > 350) {
-		// Whoa 'dere. Stop trying to burn the place down.
-		// Disables extruder heat until reset button pressed.
-
-		// RampsCerebellum will probably detect this problem when:
-		// 1. it sees canExtrude as returning false.
-		// 2. it sees getTemp as returning an absurdedly high temperature
-		// 	to which it will place the entire machine in a recoverable quarantine state.
-
-		disable(EXTRUDER_EXCEPTION_OVERTEMP);
-
-	} else if (degreesCelsius > _targetTemp) {
-
-		// Turn off the heater, and continue just fine.
-		// Figure out the cooling slope, to determine when to reactivate?
-
-		if (_activelyHeating == true) {
-			_lastCoolCycle = now;
-			digitalWrite(_pin, LOW);
-			_activelyHeating = false;
-		}
-
+		_extruderMotor->rotate(_mmHrRate);
 	}
-
-	// Duty cycle understanding, and auto calibration ...how?
-
 }
