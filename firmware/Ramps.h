@@ -52,6 +52,7 @@ class Ramps
     LedIndicator * getLedIndicator();
 
     ExtruderController * getExtruderA();
+    //ExtruderController * getExtruderB();
 
     HeaterController * getHeatbed();
     Thermistor* getHeatbedThermistor();
@@ -88,7 +89,8 @@ class Ramps
     ExtruderController _extruderControllerA;
 
     HeaterController _heatbedController;
-    HeaterController _extruderHeater;
+    HeaterController _extruderAHeater;
+    //HeaterController _extruderBHeater;
 };
 
 #endif

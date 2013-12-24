@@ -92,46 +92,60 @@ void Ramps::setup()
 	_bedThermistor.setup(TEMP_BED_PIN, BED_THERMISTOR_TYPE);
 
 	_extruderThermistorA.setup(TEMP_EXTRUDER_A_PIN, EXTRUDER_THERMISTOR_TYPE);
-
 	//_extruderThermistorB.setup(TEMP_EXTRUDER_B_PIN, EXTRUDER_THERMISTOR_TYPE);
 
-	/*	* Setup of dangerous heater components, shoehorned into controllers.
-		*	From: ExtruderController.cpp, HeatbedController.h
+	/*	* Setup of heater controllers
+		*	From: HeaterController.h
 		*
 		*/
 
 	_heatbedController.setup(HEATBED_PIN, _bedThermistor);
-	_extruderHeater.setup(HOTEND_A_PIN, _extruderThermistorA);
+	_extruderAHeater.setup(HOTEND_A_PIN, _extruderThermistorA);
+	//_extruderBHeater.setup(HOTEND_B_PIN, _extruderThermistorB);
 
-	_extruderControllerA.setup(_extruderA, _extruderHeater);
+
+	/*	* Setup of extruder(s)
+		*	From: ExtruderController.cpp
+		*
+		*/
+
+	_extruderControllerA.setup(_extruderA, _extruderAHeater);
+	// _extruderControllerB.setup(_extruderB, _extruderBHeater);
 }
 
 void Ramps::loop(long ms)
 {
-	/*	* Update data from components
-		*/
 
-	_bedThermistor.loop();
-	_extruderThermistorA.loop();
+	if ( (ms & 0xff) == 0 ) {
+		/*	* Update data from components
+			* 
+			*/
 
-	/*	* Update the 'hot' controllers
-		*
-		* Stopping fires from happening, one cycle at a time...
-		*
-		*/
+		_bedThermistor.loop();
+		_extruderThermistorA.loop();
+		//_extruderThermistorB.loop();
 
-	// To be defined and tested first...
-	
-	_heatbedController.loop(ms);
-	_extruderControllerA.loop(ms);
+		/*	* Update the 'hot' controllers
+			*
+			* Stopping fires from happening, one cycle at a time...
+			*
+			*/
+		
+		_heatbedController.loop(ms);
+		_extruderControllerA.loop(ms);
+		//_extruderControllerB.loop(ms);
+
+	}
+
 
 }
 
 void Ramps::allCold()
 {
 	_heatbedController.lockout();
-	_extruderHeater.lockout();
+	_extruderAHeater.lockout();
 }
+
 
 LedIndicator* Ramps::getLedIndicator()
 {
@@ -167,7 +181,6 @@ EndstopSwitch* Ramps::getEndstopZ()
 {
 	return &_endstopZ;
 }
-
 Thermistor* Ramps::getHeatbedThermistor()
 {
 	return &_bedThermistor;
