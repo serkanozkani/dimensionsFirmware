@@ -29,14 +29,11 @@
 // printer.calibrateZ() 1126058528
 #define CERE_CALIBRATE_Z 1126058528
 
-// printer.testPoluluLibrary() 2129009589
-#define CERE_TEST_POLULU 2129009589
-
 // printer.testEndstopX() 1636382900
 #define CERE_TEST_ENDSTOP_X 1636382900
 
-// printer.testMotorX() 779790760
-#define CERE_TEST_MOTOR_X 779790760
+// printer.testMotors() 779791651
+#define CERE_TEST_MOTORS 779791651
 
 // help()
 #define CERE_HELP 261238998
