@@ -12,6 +12,8 @@
 #ifndef CartesianController_h
 #define CartesianController_h
 
+#include "LinearMotionController.h"
+
 #include "PoluluStepper.h"
 #include "EndstopSwitch.h"
 #include "Ramps.h"
@@ -21,43 +23,24 @@ class CartesianController
 	public:
 		CartesianController();
 
+		void setup(LinearMotionController *linearMotionControllerX, LinearMotionController *linearMotionControllerY);
+
 		void loop(unsigned long now);
 
 		bool ready();
-		
-		void zeroX ();
-		void zeroY ();
 
 		void calibrateX ();
 		void calibrateY ();
 
 		void navigate(unsigned int stepsX, unsigned int stepsY);
 
-		void reset();
-
 		unsigned int status();
 	private:
 
-		PoluluStepper * _motorX;
-		PoluluStepper * _motorY;
-		EndstopSwitch * _endstopX;
-		EndstopSwitch * _endstopY;
+		LinearMotionController * _linearMotionControllerX;
+		LinearMotionController * _linearMotionControllerY;
 
-		unsigned long _actionCycles;
 
-		unsigned int _sfoX;
-		unsigned int _sfoY;
-
-		bool _zeroedX;
-		bool _zeroedY;
-
-		bool _zeroingX;
-		bool _zeroingY;
-
-		unsigned int _sftX;
-		unsigned int _sftY;
-
-		bool _movingToTarget;
 };
 
 #endif
