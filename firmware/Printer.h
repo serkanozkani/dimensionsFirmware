@@ -15,6 +15,7 @@
 
 #include "Ramps.h"
 #include "CartesianController.h"
+#include "LinearMotionController.h"
 
 #define CERE_TEST_COMPLETE 1
 
@@ -42,8 +43,8 @@ class Printer
 	// Printer.testEndstopX()
 	void testEndstopX();
 
-	// Printer.testMotorX()
-	void testMotorX();
+	// Printer.testMotors()
+	void testMotors();
 
 	void moveX (unsigned int stepX);
 	void moveY (unsigned int stepY);
@@ -52,7 +53,7 @@ class Printer
 	// Printer.pollHeatbed()
 	float pollHeatbed();
 
-	void loop( long now);
+	void loop( unsigned long now);
 
 	int status();
 
@@ -63,20 +64,18 @@ class Printer
   private:
 	CartesianController _cartesianController;
 
-	// Just one motor and endstop at a time are zeroed.
-	// Used to minimize code.
-	PoluluStepper * _motor;
-	EndstopSwitch * _endstop;
+	LinearMotionController _linearMotionControllerX;
+	LinearMotionController _linearMotionControllerY;
+	LinearMotionController _linearMotionControllerZ;
 
 	int _error;
 
 	unsigned long _actionCycles;
-	bool _actionCartesian;
 
 	bool _actionSeekingEndstop;
 	bool _startDirection;
 	bool _actionTestingEndstopX;
-	bool _actionTestingMotorX;
+	bool _actionTestingMotors;
 	bool _actionTestingHeatbed;
 	bool _actionTestingExtruder;
 
