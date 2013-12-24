@@ -30,8 +30,8 @@ process.stdin.on('data', function (l) {
 		case "testEndstopX":
 			df.testEndstopX(callback);
 			break;
-		case "testMotorX":
-			df.testMotorX(callback);
+		case "testMotors":
+			df.testMotors(callback);
 			break;
 
 		case "calibrateX":
@@ -39,6 +39,9 @@ process.stdin.on('data', function (l) {
 			break;
 		case "calibrateY":
 			df.calibrateY(callback);
+			break;
+		case "calibrateZ":
+			df.calibrateZ(callback);
 			break;
 
 		case "navigate":
