@@ -175,8 +175,8 @@ void loop() {
 				case CERE_TEST_ENDSTOP_X:
 					printer.testEndstopX();
 					break;
-				case CERE_TEST_MOTOR_X:
-					printer.testMotorX();
+				case CERE_TEST_MOTORS:
+					printer.testMotors();
 					break;
 				case CERE_NAVIGATE:
 					printer.navigate(param1, param2);
