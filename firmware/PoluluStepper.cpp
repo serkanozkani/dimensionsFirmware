@@ -71,7 +71,7 @@ void PoluluStepper::revolve (bool forward)
 
 	setDirection(forward);
 
-	for (unsigned int i = MOTOR_STEPS_PER_REVOLUTION; i--; ) {
+	for (unsigned int i = MOTOR_STEPS_PER_REVOLUTION>>4; i--; ) {
 		digitalWrite(_stepPin, HIGH);
 		delayMicroseconds(_delayPerHalfStep);
 		digitalWrite(_stepPin, LOW);
