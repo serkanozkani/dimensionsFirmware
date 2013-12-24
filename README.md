@@ -30,6 +30,10 @@ this project is not functional, and new RepRap users should check out the [RepRa
 
 ## Project Timeline
     - [Reverse chronological order]
+    - 2013-12-23 Api version bump. 0.2.5
+    - 2013-12-23 Deleted [testMotorX]. [testMotors] replaced it functionally
+    - 2013-12-23 Built new class LinearMotionController to remove redundant code from CartesianController
+    - 2013-12-21 Built new class HeaterController to remove redundant code from ExtruderController
     - 2013-12-19 Api version bump. 0.2.0
     - 2013-12-19 Started [testHotend, testHeatbed, pollExtruder]
     - 2013-12-19 Tested [navigate, status, lockout, pollHeatbed]
