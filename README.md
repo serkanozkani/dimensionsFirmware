@@ -15,6 +15,8 @@ with an overall design goal of making the source code and slicing programs more 
 connected with fewer firmware setbacks, and a well-defined open-source license. Currently
 this project is not functional, and new RepRap users should check out the [RepRap Wiki](http://reprap.org/wiki/Main_Page).
 
+## [Api 0.2.5 Documentation](https://github.com/stokes-forit/dimensionsFirmware/wiki/API-0.2.5)
+
 ## External projects for RepRap:
 [Sprinter Firmware](https://github.com/kliment/Sprinter)
 
