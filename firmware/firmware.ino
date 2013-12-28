@@ -9,19 +9,6 @@
 	* Written: 2013-12-10
 	*/
 
-/*	* In Arduino IDE
-	* How to build:
-	*
-	*	* Tools->Board->Arduino Mega 2560 or Mega ADK
-	*	* Tools->Serial Port-> {Select the proper port}
-	*	* In file selection tab (the active one is "firmware"):
-	 	 	* Select arrow at far right and edit each of these files:
-	 	 	 	* endstops.h 		(Change to normally open if necessary)
-	 	 	 	* motors.h  		(Set the calibration of steppers)
-	 	 		* thermistors.h 	(If you're using anything but 100k, edit this)
-	 	 	 	* ignition.h 		(Read the warning, and follow its instructions)
-	*/
-
 #include <avr/pgmspace.h>
 #include <math.h>
 
@@ -43,13 +30,13 @@
 
 Printer printer;
 
-long timestamp;	// Changed to long from unsigned long, 
+long _timestamp;	// Changed to long from unsigned long, 
 // the joys of 2s compliment with subtraction!
 
 CommandParser commandParser;
 
-bool readyRx = false;
-bool lockoutShutdown = false;
+bool _readyRx = false;
+bool _lockoutShutdown = false;
 
 /*	* SETUP
 	*
@@ -65,7 +52,7 @@ void setup() {
 
 	printer.reset();
 
-	readyRx = true;
+	_readyRx = true;
 
 	// No delay - just go!
 	Serial.println("Send \"help()\\n\" for list of commands.");
@@ -80,11 +67,11 @@ void setup() {
 
 void loop() {
 	
-	timestamp = millis();
+	_timestamp = millis();
 
-	(Ramps::instance()).loop(timestamp);
+	(Ramps::instance()).loop(_timestamp);
 
-	if (lockoutShutdown) {
+	if (_lockoutShutdown) {
 		// Since ramps doesn't get touched,
 		// the thermistors will time-out
 		// and the controllers will be ignored.
@@ -142,12 +129,12 @@ void loop() {
 		return;
 	}
 
-	if (readyRx && Serial.available()) {
+	if (_readyRx && Serial.available()) {
 		byte c = Serial.read();
 		commandParser.write(c);
 	
 		if (commandParser.ready()) {
-			readyRx = false;
+			_readyRx = false;
 
 			unsigned long hash;
 			unsigned int param1;
@@ -202,8 +189,8 @@ void loop() {
 					// Turn off serial comms.
 					// Returns motors to home.
 
-					readyRx = false;
-					lockoutShutdown = true;
+					_readyRx = false;
+					_lockoutShutdown = true;
 					
 					return;
 				case CERE_READ_HEATBED:
@@ -241,8 +228,8 @@ void loop() {
 					break;
 			}
 
-			readyRx = true;
+			_readyRx = true;
 		}
 	}
-	printer.loop(timestamp);
+	printer.loop(_timestamp);
 }
